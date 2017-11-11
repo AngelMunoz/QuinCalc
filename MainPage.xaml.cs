@@ -28,8 +28,11 @@ namespace QuinCalc
   public sealed partial class MainPage : Page
   {
     public TodoViewModel UpNext { get; set; }
+    public ExpenseViewModel UpNextExpense { get; set; }
     public ObservableCollection<TodoViewModel> Todos { get; set; }
     public ObservableCollection<ExpenseViewModel> Expenses { get; set; }
+    public NextExpense NextQuin { get; set; }
+
     private readonly DbContext db;
     public MainPage()
     {
@@ -41,18 +44,36 @@ namespace QuinCalc
     {
       using (var context = new QuincalcContext())
       {
-        var todos = await context.Todos.ToListAsync();
+        var todos = await context.Todos
+          .OrderByDescending(t => t.DueDate)
+          .Take(5)
+          .ToListAsync();
         var todovms = todos.Select(t => new TodoViewModel(t));
         Todos = new ObservableCollection<TodoViewModel>(todovms);
 
-        var expenses = await context.Expenses.ToListAsync();
+        var expenses = await context.Expenses
+          .OrderByDescending(e => e.DueDate)
+          .Take(5)
+          .ToListAsync();
         var expensevms = expenses.Select(e => new ExpenseViewModel(e));
         Expenses = new ObservableCollection<ExpenseViewModel>(expensevms);
+        var dayToCheck = DateTime.Now.Day < 15 ? 15 : DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month);
+
+        var totalAmount = await context.Expenses
+          .OrderBy(e => Math.Abs((e.DueDate - new DateTime(DateTime.Now.Year, DateTime.Now.Month, dayToCheck)).Ticks))
+          .SumAsync(e => e.Amount);
+
+        NextQuin = new NextExpense(new DateTime(DateTime.Now.Year, DateTime.Now.Month, dayToCheck), totalAmount);
+
       }
 
       UpNext = Todos
         .OrderBy(t => Math.Abs((t.DueDate - DateTime.Now).Ticks))
         .FirstOrDefault();
+      UpNextExpense = Expenses
+        .OrderBy(e => Math.Abs((e.DueDate - DateTime.Now).Ticks))
+        .FirstOrDefault();
+
     }
 
     private void AddExpense_Click(object sender, RoutedEventArgs e)
@@ -64,5 +85,17 @@ namespace QuinCalc
     {
       Frame.Navigate(typeof(TodoForm));
     }
+  }
+
+  public struct NextExpense
+  {
+    public NextExpense(DateTime date, decimal amount)
+    {
+      this.DueDate = date;
+      this.TotalAmount = amount;
+    }
+
+    public DateTime DueDate { get; set; }
+    public Decimal TotalAmount { get; set; }
   }
 }
