@@ -18,7 +18,9 @@
       <TextBlock Text="Is Done"/>
       <CheckBox IsChecked="{x:Bind todovm.IsDone, Mode=TwoWay}"/>
     </StackPanel>
-    <Button Name="SaveTodoBtn" Click="SaveTodoBtn_Click" Content="Save Todo" Width="150" Height="45"/>
-    <Button Name="CancelBtn" Click="CancelBtn_Click" Content="Cancel" Width="150" Height="45"/>
+    <StackPanel Orientation="Horizontal">
+      <Button Padding="3" Name="SaveTodoBtn" Click="SaveTodoBtn_Click" Content="Save Todo"/>
+      <Button Padding="3" Name="CancelBtn" Click="CancelBtn_Click" Content="Cancel"/>
+    </StackPanel>
   </StackPanel>
 </Page>

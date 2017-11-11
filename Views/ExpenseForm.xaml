@@ -16,7 +16,9 @@
       <TextBlock Text="Due To"/>
       <DatePicker Name="DatePickerCtrl"/>
     </StackPanel>
-    <Button Name="SaveExpenseBtn" Click="SaveExpenseBtn_Click" Content="Save Expense" Width="150" Height="45"/>
-    <Button Name="CancelBtn" Click="CancelBtn_Click" Content="Cancel" Width="150" Height="45"/>
+    <StackPanel Orientation="Horizontal">
+      <Button Padding="3" Name="SaveExpenseBtn" Click="SaveExpenseBtn_Click" Content="Save Expense"/>
+      <Button Padding="3" Name="CancelBtn" Click="CancelBtn_Click" Content="Cancel"/>
+    </StackPanel>
   </StackPanel>
 </Page>
