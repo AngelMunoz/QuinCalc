@@ -1,0 +1,22 @@
+﻿<Page
+    x:Class="QuinCalc.Views.ExpenseForm"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:QuinCalc.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+  <StackPanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <StackPanel HorizontalAlignment="Left" Height="auto">
+      <TextBlock Text="Name"/>
+      <TextBox PlaceholderText="Expense's Name" Text="{x:Bind expensevm.Name, Mode=TwoWay}"/>
+      <TextBlock Text="Amount"/>
+      <TextBox PlaceholderText="Expense Amount" Text="{x:Bind tempAmt, Mode=TwoWay}"/>
+      <TextBlock Text="Due To"/>
+      <DatePicker Name="DatePickerCtrl"/>
+    </StackPanel>
+    <Button Name="SaveExpenseBtn" Click="SaveExpenseBtn_Click" Content="Save Expense" Width="150" Height="45"/>
+    <Button Name="CancelBtn" Click="CancelBtn_Click" Content="Cancel" Width="150" Height="45"/>
+  </StackPanel>
+</Page>
