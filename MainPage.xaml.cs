@@ -14,6 +14,10 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using QuinCalc.Models;
 using System.Collections.ObjectModel;
+using QuinCalc.ViewModels;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using QuinCalc.Views;
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
 namespace QuinCalc
@@ -23,18 +27,41 @@ namespace QuinCalc
   /// </summary>
   public sealed partial class MainPage : Page
   {
-    public ObservableCollection<Todo> Todos = new ObservableCollection<Todo>(){
-      new Todo() { Id = 1, Name = "Some Todo 1", IsDone = true },
-      new Todo() { Id = 2, Name = "Some Todo 2", IsDone = false },
-      new Todo() { Id = 3, Name = "Some Todo 3", IsDone = true },
-      new Todo() { Id = 4, Name = "Some Todo 4", IsDone = false },
-      new Todo() { Id = 5, Name = "Some Todo 5", IsDone = true },
-      new Todo() { Id = 6, Name = "Some Todo 6", IsDone = false },
-    };
-
+    public TodoViewModel UpNext { get; set; }
+    public ObservableCollection<TodoViewModel> Todos { get; set; }
+    public ObservableCollection<ExpenseViewModel> Expenses { get; set; }
+    private readonly DbContext db;
     public MainPage()
     {
       this.InitializeComponent();
+      this.LoadCollections();
+    }
+
+    private async Task LoadCollections()
+    {
+      using (var context = new QuincalcContext())
+      {
+        var todos = await context.Todos.ToListAsync();
+        var todovms = todos.Select(t => new TodoViewModel(t));
+        Todos = new ObservableCollection<TodoViewModel>(todovms);
+
+        var expenses = await context.Expenses.ToListAsync();
+        var expensevms = expenses.Select(e => new ExpenseViewModel(e));
+        Expenses = new ObservableCollection<ExpenseViewModel>(expensevms);
+      }
+
+      UpNext = Todos
+        .OrderBy(t => Math.Abs((t.DueDate - DateTime.Now).Ticks))
+        .FirstOrDefault();
+    }
+
+    private void AddExpense_Click(object sender, RoutedEventArgs e)
+    {
+    }
+
+    private void AddTodo_Click(object sender, RoutedEventArgs e)
+    {
+      Frame.Navigate(typeof(TodoForm));
     }
   }
 }

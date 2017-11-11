@@ -8,26 +8,28 @@
     mc:Ignorable="d">
 
   <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-    <StackPanel>
-      <TextBlock>
-        Hello Worldish!
-      </TextBlock>
-      <ListView ItemsSource="{x:Bind Todos}" VerticalAlignment="Center">
-        <ListView.ItemTemplate>
-          <DataTemplate>
-            <StackPanel>
-              <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Name: " Padding="0, 0, 5, 0"/>
-                <TextBlock Text="{Binding Name}"/>
-              </StackPanel>
-              <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Is Done: " Padding="0, 0, 5, 0"/>
-                <TextBlock Text="{Binding IsDone}"/>
-              </StackPanel>
-            </StackPanel>
-          </DataTemplate>
-        </ListView.ItemTemplate>
-      </ListView>
-    </StackPanel>
+    <CommandBar VerticalAlignment="Bottom">
+      <AppBarSeparator/>
+      <AppBarToggleButton Icon="Calculator" Label="Expenses"/>
+      <AppBarToggleButton Icon="List" Label="Todo's"/>
+
+      <CommandBar.SecondaryCommands>
+        <AppBarButton Icon="Add" Label="Add Expense" Click="AddExpense_Click"/>
+        <AppBarButton Icon="Add" Label="Add Todo" Click="AddTodo_Click"/>
+      </CommandBar.SecondaryCommands>
+
+      <CommandBar.Content>
+        <StackPanel Width="auto" Orientation="Horizontal">
+          <StackPanel Padding="0,0,5,0" Orientation="Vertical">
+            <TextBlock>Up Next: </TextBlock>
+            <TextBlock Text="{x:Bind UpNext.Description}"/>
+          </StackPanel>
+          <StackPanel Padding="0,0,5,0" Orientation="Vertical">
+            <TextBlock>Due to:</TextBlock>
+            <TextBlock Text="{x:Bind UpNext.DueDate.ToLongDateString()}"/>
+          </StackPanel>
+        </StackPanel>
+      </CommandBar.Content>
+    </CommandBar>
   </Grid>
 </Page>
