@@ -57,6 +57,7 @@ namespace QuinCalc
 
     private void AddExpense_Click(object sender, RoutedEventArgs e)
     {
+      Frame.Navigate(typeof(ExpenseForm));
     }
 
     private void AddTodo_Click(object sender, RoutedEventArgs e)
