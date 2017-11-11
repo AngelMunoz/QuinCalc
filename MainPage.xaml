@@ -34,20 +34,37 @@
     </CommandBar>
     <Pivot Title="QuinCalc" Margin="0,0,0,54">
       <PivotItem Header="Expenses" Margin="12,0,12,46.8">
-        <StackPanel HorizontalAlignment="Left" Width="auto">
-          <ListView ItemsSource="{x:Bind Expenses}">
-            <ListViewHeaderItem>
-              This are the foreseen Expenses...
-            </ListViewHeaderItem>
-            <ListView.ItemTemplate>
-              <DataTemplate x:DataType="model:ExpenseViewModel">
-                <StackPanel Orientation="Vertical" Height="50">
-                  <TextBlock Text="{x:Bind Name}"/>
-                  <TextBlock Text="{x:Bind Amount}"/>
-                </StackPanel>
-              </DataTemplate>
-            </ListView.ItemTemplate>
-          </ListView>
+        <!-- Expenses List Panel -->
+        <StackPanel Orientation="Horizontal" >
+          <StackPanel HorizontalAlignment="Left" Width="auto">
+            <ListView ItemsSource="{x:Bind Expenses}">
+              <ListViewHeaderItem>
+                This are the foreseen Expenses...
+              </ListViewHeaderItem>
+              <ListView.ItemTemplate>
+                <DataTemplate x:DataType="model:ExpenseViewModel">
+                  <StackPanel Orientation="Vertical" Height="50">
+                    <TextBlock Text="{x:Bind Name}"/>
+                    <TextBlock Text="{x:Bind Amount}"/>
+                  </StackPanel>
+                </DataTemplate>
+              </ListView.ItemTemplate>
+            </ListView>
+          </StackPanel>
+          <!-- Info/Resume Panel -->
+          <StackPanel HorizontalAlignment="Center">
+            <StackPanel Orientation="Horizontal">
+              <TextBlock Padding="3">Closest Expense</TextBlock>
+              <TextBlock Padding="3" Text="{x:Bind UpNextExpense.DueDate}"/>
+            </StackPanel>
+            <StackPanel Orientation="Vertical">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Padding="3">Total Amount Due To </TextBlock>
+                <TextBlock Padding="3" Text="{x:Bind NextQuin.DueDate}"/>
+              </StackPanel>
+              <TextBlock Text="{x:Bind NextQuin.TotalAmount}"/>
+            </StackPanel>
+          </StackPanel>
         </StackPanel>
       </PivotItem>
       <PivotItem Header="Todos" Margin="12,0,12,49.8">
