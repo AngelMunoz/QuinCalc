@@ -41,5 +41,10 @@ namespace QuinCalc.Views
       }
       Frame.Navigate(typeof(MainPage));
     }
+
+    private void CancelBtn_Click(object sender, RoutedEventArgs e)
+    {
+      Frame.Navigate(typeof(MainPage));
+    }
   }
 }
