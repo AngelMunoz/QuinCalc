@@ -2,6 +2,7 @@
 using QuinCalc.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -28,6 +29,8 @@ namespace QuinCalc.Views
     public ExpenseViewModel expensevm = new ExpenseViewModel();
     public bool EnableSave { get; set; }
     public string tempAmt = "0";
+    public bool updating = false;
+
     public ExpenseForm()
     {
       this.InitializeComponent();
@@ -40,7 +43,15 @@ namespace QuinCalc.Views
       expensevm.Amount = val;
       using (var context = new QuincalcContext())
       {
-        context.Expenses.Add(expensevm);
+        if(!updating)
+        {
+          context.Expenses.Add(expensevm);
+        }
+        else
+        {
+          context.Expenses.Attach(expensevm);
+          context.Expenses.Update(expensevm);
+        }
         await context.SaveChangesAsync();
       }
       Frame.Navigate(typeof(MainPage));
@@ -49,6 +60,14 @@ namespace QuinCalc.Views
     private void CancelBtn_Click(object sender, RoutedEventArgs e)
     {
       Frame.Navigate(typeof(MainPage));
+    }
+    
+    protected override void OnNavigatedTo(NavigationEventArgs e)
+    {
+      base.OnNavigatedTo(e);
+      expensevm = (ExpenseViewModel)e.Parameter ?? expensevm;
+      tempAmt = expensevm.Amount.ToString();
+      updating = (ExpenseViewModel)e.Parameter != null ? true : false;
     }
   }
 }

@@ -26,6 +26,8 @@ namespace QuinCalc.Views
   public sealed partial class TodoForm : Page
   {
     public TodoViewModel todovm = new TodoViewModel();
+    public bool updating = false;
+
     public TodoForm()
     {
       this.InitializeComponent();
@@ -36,7 +38,15 @@ namespace QuinCalc.Views
       todovm.DueDate = DatePickerCtrl.Date.DateTime;
       using (var context = new QuincalcContext())
       {
-        context.Todos.Add(todovm);
+        if (!updating)
+        {
+          context.Todos.Add(todovm);
+        }
+        else
+        {
+          context.Todos.Attach(todovm);
+          context.Todos.Update(todovm);
+        }
         await context.SaveChangesAsync();
       }
       Frame.Navigate(typeof(MainPage));
@@ -45,6 +55,13 @@ namespace QuinCalc.Views
     private void CancelBtn_Click(object sender, RoutedEventArgs e)
     {
       Frame.Navigate(typeof(MainPage));
+    }
+
+    protected override void OnNavigatedTo(NavigationEventArgs e)
+    {
+      base.OnNavigatedTo(e);
+      todovm = (TodoViewModel)e.Parameter ?? todovm;
+      updating = (TodoViewModel)e.Parameter != null ? true : false;
     }
   }
 }
