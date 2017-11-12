@@ -324,7 +324,14 @@ namespace QuinCalc
     private void EditBtn_Click(object sender, RoutedEventArgs e)
     {
       var selected = ExpensesList.SelectedItem != null ? ExpensesList.SelectedItem : TodosList.SelectedItem;
-      Debug.WriteLine(selected.GetType());
+      if(selected.GetType().Name == "ExpenseViewModel")
+      {
+        Frame.Navigate(typeof(ExpenseForm), selected);
+      } 
+      else
+      {
+        Frame.Navigate(typeof(TodoForm), selected);
+      }
     }
   }
 }
