@@ -116,7 +116,10 @@ namespace QuinCalc
     /// <returns></returns>
     private TodoViewModel GetUpnext(ObservableCollection<TodoViewModel> todos)
     {
-      return todos.OrderBy(t => Math.Abs((t.DueDate - DateTime.Now).Ticks)).FirstOrDefault();
+      return todos
+        .OrderBy(t => Math.Abs((t.DueDate - DateTime.Now).Ticks))
+        .Where(t => !t.IsDone)
+        .FirstOrDefault();
     }
 
     /// <summary>
@@ -138,7 +141,8 @@ namespace QuinCalc
     private static async Task<decimal> GetTotalAmount(QuincalcContext context, int dayToCheck)
     {
       return await context.Expenses
-        .OrderBy(e => e.DueDate >= DateTime.Now && e.DueDate <= GetNextQuin(dayToCheck))
+        .OrderBy(e => e.DueDate)
+        .Where(e => e.DueDate >= DateTime.Now && e.DueDate <= GetNextQuin(dayToCheck))
         .SumAsync(e => e.Amount);
     }
 
@@ -268,9 +272,22 @@ namespace QuinCalc
       var selectedTodos = TodosList.SelectedItems.ToList();
       await RemoveExpensesFromList(selectedExpenses);
       await RemoveTodosFromList(selectedTodos);
-      UpNext = GetUpnext(Todos);
-      UpNextExpense = GetUpNextExpense(Expenses);
-      UpdateLayout();
+
+      var upnext = GetUpnext(Todos);
+      var upnextexpense = GetUpNextExpense(Expenses);
+      if (upnext != null)
+      {
+        UpNext.Name = upnext.Name;
+        UpNext.Description = upnext.Description;
+        UpNext.DueDate = upnext.DueDate;
+        UpNext.IsDone = upnext.IsDone;
+      }
+      if (upnextexpense != null)
+      {
+        UpNextExpense.Name = upnextexpense.Name;
+        UpNextExpense.Amount = upnextexpense.Amount;
+        UpNextExpense.DueDate = upnextexpense.DueDate;
+      }
     }
 
     /// <summary>
@@ -290,7 +307,11 @@ namespace QuinCalc
             Expenses.Remove(item);
           }
           await context.SaveChangesAsync();
-          NextQuin = await GetNextQuin(context);
+          var nextquin = await GetNextQuin(context);
+
+          NextQuin.Name = nextquin.Name;
+          NextQuin.Amount = nextquin.Amount;
+          NextQuin.DueDate = nextquin.DueDate;
         }
       }
     }
@@ -323,11 +344,11 @@ namespace QuinCalc
     /// <param name="e"></param>
     private void EditBtn_Click(object sender, RoutedEventArgs e)
     {
-      var selected = ExpensesList.SelectedItem != null ? ExpensesList.SelectedItem : TodosList.SelectedItem;
-      if(selected.GetType().Name == "ExpenseViewModel")
+      var selected = ExpensesList.SelectedItem ?? TodosList.SelectedItem;
+      if (selected.GetType().Name == "ExpenseViewModel")
       {
         Frame.Navigate(typeof(ExpenseForm), selected);
-      } 
+      }
       else
       {
         Frame.Navigate(typeof(TodoForm), selected);

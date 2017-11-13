@@ -19,12 +19,12 @@
       <CommandBar.Content>
         <StackPanel Width="auto" Orientation="Horizontal">
           <StackPanel Padding="0,0,5,0" Orientation="Vertical">
-            <TextBlock>Up Next:</TextBlock>
-            <TextBlock Text="{x:Bind UpNext.Description}"/>
+            <TextBlock FontWeight="Bold">Up Next:</TextBlock>
+            <TextBlock Text="{x:Bind UpNext.Name, Mode=OneWay}"/>
           </StackPanel>
           <StackPanel Padding="0,0,5,0" Orientation="Vertical">
-            <TextBlock>Due to:</TextBlock>
-            <TextBlock Text="{x:Bind UpNext.DueDate.ToLongDateString()}"/>
+            <TextBlock FontWeight="Bold">Due to:</TextBlock>
+            <TextBlock Text="{x:Bind UpNext.DueDate.ToLongDateString(), Mode=OneWay}"/>
           </StackPanel>
         </StackPanel>
       </CommandBar.Content>
@@ -34,15 +34,25 @@
         <!-- Expenses List Panel -->
         <StackPanel Orientation="Horizontal" >
           <StackPanel HorizontalAlignment="Left" Width="auto">
-            <ListView Name="ExpensesList" SelectionChanged="ExpensesList_SelectionChanged" SelectionMode="Multiple" ItemsSource="{x:Bind Expenses}">
+            <ListView Name="ExpensesList" SelectionChanged="ExpensesList_SelectionChanged" SelectionMode="Multiple" ItemsSource="{x:Bind Expenses, Mode=OneWay}">
               <ListViewHeaderItem>
                 This are the foreseen Expenses...
               </ListViewHeaderItem>
               <ListView.ItemTemplate>
                 <DataTemplate x:DataType="model:ExpenseViewModel">
-                  <StackPanel Orientation="Vertical" Height="50">
-                    <TextBlock Text="{x:Bind Name}"/>
-                    <TextBlock Text="{x:Bind Amount}"/>
+                  <StackPanel Orientation="Vertical" Height="auto">
+                    <StackPanel>
+                      <TextBlock FontWeight="Bold" Text="Name:" />
+                      <TextBlock Text="{x:Bind Name, Mode=OneWay}"/>
+                    </StackPanel>
+                    <StackPanel>
+                      <TextBlock FontWeight="Bold" Text="Amount:" />
+                      <TextBlock Text="{x:Bind Amount, Mode=OneWay}"/>
+                    </StackPanel>
+                    <StackPanel>
+                      <TextBlock FontWeight="Bold" Text="Due To:" />
+                      <TextBlock Text="{x:Bind DueDate.ToLongDateString(), Mode=OneWay}"/>
+                    </StackPanel>
                   </StackPanel>
                 </DataTemplate>
               </ListView.ItemTemplate>
@@ -51,30 +61,44 @@
           <!-- Info/Resume Panel -->
           <StackPanel HorizontalAlignment="Center">
             <StackPanel Orientation="Horizontal">
-              <TextBlock Padding="3">Closest Expense</TextBlock>
-              <TextBlock Padding="3" Text="{x:Bind UpNextExpense.DueDate}"/>
+              <TextBlock FontWeight="Bold" Padding="3">Closest Expense</TextBlock>
+              <TextBlock Padding="3" Text="{x:Bind UpNextExpense.DueDate.ToLongDateString(), Mode=OneWay}"/>
             </StackPanel>
             <StackPanel Orientation="Vertical">
               <StackPanel Orientation="Horizontal">
-                <TextBlock Padding="3">Total Amount Due To</TextBlock>
-                <TextBlock Padding="3" Text="{x:Bind NextQuin.DueDate}"/>
+                <TextBlock FontWeight="Bold" Padding="3">Total Amount Due To</TextBlock>
+                <TextBlock Padding="3" Text="{x:Bind NextQuin.DueDate.ToLongDateString(), Mode=OneWay}"/>
               </StackPanel>
-              <TextBlock Text="{x:Bind NextQuin.Amount}"/>
+              <TextBlock Text="{x:Bind NextQuin.Amount, Mode=OneWay}"/>
             </StackPanel>
           </StackPanel>
         </StackPanel>
       </PivotItem>
       <PivotItem Header="Todos" Margin="12,0,12,49.8">
         <StackPanel HorizontalAlignment="Left" Width="auto">
-          <ListView Name="TodosList" SelectionMode="Multiple" SelectionChanged="TodosList_SelectionChanged" ItemsSource="{x:Bind Todos}">
+          <ListView Name="TodosList" SelectionMode="Multiple" SelectionChanged="TodosList_SelectionChanged" ItemsSource="{x:Bind Todos, Mode=OneWay}">
             <ListViewHeaderItem>
               This are the current Todos...
             </ListViewHeaderItem>
             <ListView.ItemTemplate>
               <DataTemplate x:DataType="model:TodoViewModel">
-                <StackPanel Orientation="Vertical" Height="50">
-                  <TextBlock Text="{x:Bind Name}"/>
-                  <TextBlock Text="{x:Bind Description}"/>
+                <StackPanel Height="auto">
+                  <StackPanel>
+                    <TextBlock FontWeight="Bold" Text="Name:"/>
+                    <TextBlock Text="{x:Bind Name, Mode=OneWay}"/>
+                  </StackPanel>
+                  <StackPanel>
+                    <TextBlock FontWeight="Bold" Text="Description:"/>
+                    <TextBlock Text="{x:Bind Description, Mode=OneWay}"/>
+                  </StackPanel>
+                  <StackPanel>
+                    <TextBlock FontWeight="Bold" Text="Due Date:"/>
+                    <TextBlock Text="{x:Bind DueDate.ToLongDateString(), Mode=OneWay}"/>
+                  </StackPanel>
+                  <StackPanel Orientation="Horizontal">
+                    <TextBlock FontWeight="Bold" Text="Is Done:" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                    <CheckBox IsChecked="{x:Bind IsDone, Mode=OneWay}" IsEnabled="False" VerticalAlignment="Center"  HorizontalAlignment="Right"/>
+                  </StackPanel>
                 </StackPanel>
               </DataTemplate>
             </ListView.ItemTemplate>
