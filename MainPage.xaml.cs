@@ -117,7 +117,6 @@ namespace QuinCalc
     private TodoViewModel GetUpnext(ObservableCollection<TodoViewModel> todos)
     {
       return todos
-        .OrderBy(t => Math.Abs((t.DueDate - DateTime.Now).Ticks))
         .Where(t => !t.IsDone)
         .FirstOrDefault();
     }
@@ -141,8 +140,7 @@ namespace QuinCalc
     private static async Task<decimal> GetTotalAmount(QuincalcContext context, int dayToCheck)
     {
       return await context.Expenses
-        .OrderBy(e => e.DueDate)
-        .Where(e => e.DueDate >= DateTime.Now && e.DueDate <= GetNextQuin(dayToCheck))
+        .Where(e => (e.DueDate.Day >= DateTime.Now.Day) && (e.DueDate.Day <= GetNextQuin(dayToCheck).Day))
         .SumAsync(e => e.Amount);
     }
 
@@ -165,7 +163,7 @@ namespace QuinCalc
     private async Task<ObservableCollection<ExpenseViewModel>> GetExpenseVMs(QuincalcContext context, int skip = 0, int limit = 15)
     {
       var expenses = await context.Expenses
-                .OrderByDescending(e => e.DueDate)
+                .OrderBy(e => e.DueDate)
                 .Skip(skip)
                 .Take(limit)
                 .ToListAsync();
@@ -182,7 +180,7 @@ namespace QuinCalc
     private async Task<ObservableCollection<TodoViewModel>> GetTodoVMs(QuincalcContext context, int skip = 0, int limit = 15)
     {
       var todos = await context.Todos
-                .OrderByDescending(t => t.DueDate)
+                .OrderBy(t => t.DueDate)
                 .Skip(skip)
                 .Take(limit)
                 .ToListAsync();
@@ -282,11 +280,30 @@ namespace QuinCalc
         UpNext.DueDate = upnext.DueDate;
         UpNext.IsDone = upnext.IsDone;
       }
+      else
+      {
+        if(UpNext !=  null)
+        {
+          UpNext.Name = "";
+          UpNext.Description = "";
+          UpNext.DueDate = NextQuin.DueDate;
+          UpNext.IsDone = false;
+        }
+      }
       if (upnextexpense != null)
       {
         UpNextExpense.Name = upnextexpense.Name;
         UpNextExpense.Amount = upnextexpense.Amount;
         UpNextExpense.DueDate = upnextexpense.DueDate;
+      }
+      else
+      {
+        if(UpNextExpense != null)
+        {
+          UpNextExpense.Name = "";
+          UpNextExpense.Amount = 0;
+          UpNextExpense.DueDate = NextQuin.DueDate;
+        }
       }
     }
 
