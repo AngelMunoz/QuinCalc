@@ -43,6 +43,7 @@ namespace QuinCalc
     public MainPage()
     {
       this.InitializeComponent();
+      LightsBtn.IsChecked = RequestedTheme == ElementTheme.Default || RequestedTheme == ElementTheme.Light;
       this.LoadCollections();
     }
 
@@ -370,6 +371,11 @@ namespace QuinCalc
       {
         Frame.Navigate(typeof(TodoForm), selected);
       }
+    }
+
+    private void LightsBtn_Click(object sender, RoutedEventArgs e)
+    {
+      RequestedTheme = LightsBtn.IsChecked.Value ? ElementTheme.Light : ElementTheme.Dark;
     }
   }
 }

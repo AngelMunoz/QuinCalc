@@ -15,7 +15,9 @@
       <AppBarSeparator/>
       <AppBarButton Icon="Calculator" Label="Add Expense" Click="AddExpense_Click"/>
       <AppBarButton Icon="List" Label="Add Todo" Click="AddTodo_Click"/>
-
+      <CommandBar.SecondaryCommands>
+        <AppBarToggleButton Name="LightsBtn" Click="LightsBtn_Click"  Label="&#xE82F; Turn The Lights" FontFamily="Segoe MDL2 Assets"/>
+      </CommandBar.SecondaryCommands>
       <CommandBar.Content>
         <StackPanel Width="auto" Orientation="Horizontal">
           <StackPanel Padding="0,0,5,0" Orientation="Vertical">
@@ -33,17 +35,17 @@
       <PivotItem Header="Expenses" Margin="12,0,12,46.8">
         <!-- Expenses List Panel -->
         <StackPanel Orientation="Horizontal" >
-          <StackPanel HorizontalAlignment="Left" Width="auto">
-            <ListView Name="ExpensesList" SelectionChanged="ExpensesList_SelectionChanged" SelectionMode="Multiple" ItemsSource="{x:Bind Expenses, Mode=OneWay}">
+          <Grid Width="auto">
+            <ListView  Name="ExpensesList" SelectionChanged="ExpensesList_SelectionChanged" SelectionMode="Extended" ItemsSource="{x:Bind Expenses, Mode=OneWay}">
               <ListViewHeaderItem>
                 This are the foreseen Expenses...
               </ListViewHeaderItem>
               <ListView.ItemTemplate>
                 <DataTemplate x:DataType="model:ExpenseViewModel">
-                  <StackPanel Orientation="Vertical" Height="auto">
+                  <StackPanel Height="auto">
                     <StackPanel>
                       <TextBlock FontWeight="Bold" Text="Name:" />
-                      <TextBlock Text="{x:Bind Name, Mode=OneWay}"/>
+                      <TextBlock MaxWidth="320" TextWrapping="Wrap" Text="{x:Bind Name, Mode=OneWay}"/>
                     </StackPanel>
                     <StackPanel>
                       <TextBlock FontWeight="Bold" Text="Amount:" />
@@ -57,7 +59,7 @@
                 </DataTemplate>
               </ListView.ItemTemplate>
             </ListView>
-          </StackPanel>
+          </Grid>
           <!-- Info/Resume Panel -->
           <StackPanel HorizontalAlignment="Center">
             <StackPanel Orientation="Horizontal">
@@ -75,8 +77,8 @@
         </StackPanel>
       </PivotItem>
       <PivotItem Header="Todos" Margin="12,0,12,49.8">
-        <StackPanel HorizontalAlignment="Left" Width="auto">
-          <ListView Name="TodosList" SelectionMode="Multiple" SelectionChanged="TodosList_SelectionChanged" ItemsSource="{x:Bind Todos, Mode=OneWay}">
+        <Grid HorizontalAlignment="Left">
+          <ListView Name="TodosList" SelectionMode="Extended" SelectionChanged="TodosList_SelectionChanged" ItemsSource="{x:Bind Todos, Mode=OneWay}">
             <ListViewHeaderItem>
               This are the current Todos...
             </ListViewHeaderItem>
@@ -85,11 +87,11 @@
                 <StackPanel Height="auto">
                   <StackPanel>
                     <TextBlock FontWeight="Bold" Text="Name:"/>
-                    <TextBlock Text="{x:Bind Name, Mode=OneWay}"/>
+                    <TextBlock MaxWidth="320" TextWrapping="Wrap" Text="{x:Bind Name, Mode=OneWay}"/>
                   </StackPanel>
                   <StackPanel>
                     <TextBlock FontWeight="Bold" Text="Description:"/>
-                    <TextBlock Text="{x:Bind Description, Mode=OneWay}"/>
+                    <TextBlock MaxWidth="320" TextWrapping="WrapWholeWords" Text="{x:Bind Description, Mode=OneWay}"/>
                   </StackPanel>
                   <StackPanel>
                     <TextBlock FontWeight="Bold" Text="Due Date:"/>
@@ -103,7 +105,7 @@
               </DataTemplate>
             </ListView.ItemTemplate>
           </ListView>
-        </StackPanel>
+        </Grid>
       </PivotItem>
     </Pivot>
   </Grid>
