@@ -1,6 +1,8 @@
 # QuinCalc
 Just ignore it too
 
+[![Build status](https://build.appcenter.ms/v0.1/apps/bf20dfb7-a897-483f-a45b-b9ee30725060/branches/master/badge)](https://appcenter.ms)
+-----------
 Quincalc Is a small sample of a Universal Windows Platform Using Entity Framework Core, SQLite.
 
 It is Supposed to be some sort of Todo App and a Biweekly Expense Calculator
