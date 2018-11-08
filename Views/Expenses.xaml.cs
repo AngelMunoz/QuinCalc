@@ -2,12 +2,10 @@
 using QuinCalc.Models;
 using QuinCalc.ViewModels;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -20,6 +18,9 @@ namespace QuinCalc.Views
   {
     public ObservableCollection<ExpenseViewModel> ExpensesList = new ObservableCollection<ExpenseViewModel>();
 
+    public int skipExpenses = 0;
+    public int limitExpenses = 15;
+
     public Expenses()
     {
       InitializeComponent();
@@ -28,9 +29,32 @@ namespace QuinCalc.Views
 
     private async void LoadExpenses()
     {
+      ExpensesList.Clear();
       using (var context = new QuincalcContext())
       {
-        ExpensesList = await GetExpenseVMs(context);
+        var expenses = await GetExpenseVMs(context);
+        foreach (var expense in expenses)
+        {
+          ExpensesList.Add(expense);
+        }
+      }
+
+      if (ExpensesList.Count < limitExpenses)
+      {
+        NextBtn.IsEnabled = false;
+      }
+      else
+      {
+        NextBtn.IsEnabled = true;
+      }
+
+      if (skipExpenses < 15)
+      {
+        BackBtn.IsEnabled = false;
+      }
+      else
+      {
+        BackBtn.IsEnabled = true;
       }
     }
 
@@ -51,14 +75,50 @@ namespace QuinCalc.Views
       return new ObservableCollection<ExpenseViewModel>(expenses.Select(e => new ExpenseViewModel(e)));
     }
 
-    /// <summary>
-    /// Remove Expenses From List
-    /// </summary>
-    /// <param name="selectedExpenses"></param>
-    /// <returns></returns>
-    private async Task RemoveExpenses(List<object> selectedExpenses)
+    private async void CreateExpenseBtn_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
     {
-      throw new NotImplementedException();
+      using (var context = new QuincalcContext())
+      {
+        await context.Expenses.AddAsync(new Expense());
+        await context.SaveChangesAsync();
+      }
+      LoadExpenses();
     }
+
+    private void SaveBtn_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+    {
+      SaveBtn.IsEnabled = false;
+      ExpenseViewModel current = MDView.SelectedItem as ExpenseViewModel;
+      using (var context = new QuincalcContext())
+      {
+        context.Expenses.Update(current);
+        context.SaveChangesAsync();
+      }
+      SaveBtn.IsEnabled = true;
+    }
+
+    private void DeleteBtn_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+    {
+      SaveBtn.IsEnabled = false;
+      ExpenseViewModel current = MDView.SelectedItem as ExpenseViewModel;
+      using (var context = new QuincalcContext())
+      {
+        context.Expenses.Remove(current);
+        context.SaveChangesAsync();
+      }
+      SaveBtn.IsEnabled = true;
+      LoadExpenses();
+    }
+
+    private void BackBtn_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+    {
+
+    }
+
+    private void NextBtn_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+    {
+
+    }
+
   }
 }

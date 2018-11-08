@@ -9,9 +9,10 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <controls:MasterDetailsView BackButtonBehavior="Automatic" 
-                                    ItemsSource="{x:Bind TodosList}"
-                                    NoSelectionContent="Select an item to view"
-                                    CompactModeThresholdWidth="720">
+                                ItemsSource="{x:Bind TodosList}"
+                                NoSelectionContent="Select an to-do to view"
+                                CompactModeThresholdWidth="720"
+                                x:Name="MDView">
         <controls:MasterDetailsView.ItemTemplate>
             <DataTemplate>
                 <StackPanel Margin="0,8">
@@ -43,7 +44,7 @@
             <DataTemplate>
                 <StackPanel HorizontalAlignment="Center"
                                     VerticalAlignment="Center">
-                    <SymbolIcon Symbol="Mail" RenderTransformOrigin=".5,.5">
+                    <SymbolIcon Symbol="List" RenderTransformOrigin=".5,.5">
                         <SymbolIcon.RenderTransform>
                             <CompositeTransform 
                                         ScaleX="2" 
@@ -53,26 +54,31 @@
                     <TextBlock Text="{Binding}" 
                                    FontSize="24" 
                                    Margin="0,12"/>
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Text="Or Create A Fresh One" Margin="5" FontSize="24"/>
+                    <Button x:Name="CreateTodoBtn" Height="40" Width="40" HorizontalAlignment="Center" Click="CreateTodoBtn_Click">
+                        <SymbolIcon Symbol="Add" />
+                    </Button>
+                </StackPanel>
                 </StackPanel>
             </DataTemplate>
         </controls:MasterDetailsView.NoSelectionContentTemplate>
         <controls:MasterDetailsView.MasterCommandBar>
             <CommandBar>
-                <AppBarButton Icon="Back" Label="Back"/>
-                <AppBarButton Icon="Forward" Label="Forward"/>
+                <AppBarButton x:Name="NextBtn" Icon="Back" Label="Back" Click="NextBtn_Click"/>
+                <AppBarButton x:Name="BackBtn" Icon="Forward" Label="Forward" Click="BackBtn_Click"/>
                 <CommandBar.Content>
                     <TextBlock Margin="12,14">
-                                <Run Text="{Binding TodosList.Count}" />
-                                <Run Text="Items" />
+                                <Run Text="{x:Bind TodosList.Count}" />
+                                <Run Text="To-do's" />
                     </TextBlock>
                 </CommandBar.Content>
             </CommandBar>
         </controls:MasterDetailsView.MasterCommandBar>
         <controls:MasterDetailsView.DetailsCommandBar>
             <CommandBar>
-                <AppBarButton Icon="MailReply" Label="Reply" />
-                <AppBarButton Icon="MailReplyAll" Label="Reply All" />
-                <AppBarButton Icon="MailForward" Label="Forward" />
+                <AppBarButton x:Name="SaveBtn" Icon="Save" Label="Save To-do" Click="SaveBtn_Click"/>
+                <AppBarButton x:Name="DeleteBtn" Icon="Delete" Label="Delete To-do" Click="DeleteBtn_Click" />
             </CommandBar>
         </controls:MasterDetailsView.DetailsCommandBar>
     </controls:MasterDetailsView>

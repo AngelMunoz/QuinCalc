@@ -8,7 +8,30 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
-        <TextBlock>Homeeee</TextBlock>
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel x:Name="UpNextTodoPanel" Grid.Column="0" Grid.Row="0" Margin="5">
+            <TextBlock>Up Next To-do</TextBlock>
+            <TextBlock Text="{x:Bind UpNext.Name}"/>
+        </StackPanel>
+        <StackPanel x:Name="UpNextExpensePanel" Grid.Column="1" Grid.Row="0" Margin="5">
+            <TextBlock>Up Next Expense</TextBlock>
+            <TextBlock Text="{x:Bind UpNextExpense.Name}"/>
+        </StackPanel>
+        <StackPanel x:Name="ClosestExpensePanel" Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+            <TextBlock>Closest Biweekly Expense: </TextBlock>
+            <TextBlock Text="{x:Bind NextQuin.Name}" />
+        </StackPanel>
+        <StackPanel Grid.ColumnSpan="2" Grid.RowSpan="2" x:Name="NoExpensesPanel" Visibility="Collapsed">
+            <TextBlock>No Expenses For this period :)</TextBlock>
+        </StackPanel>
     </Grid>
 </Page>

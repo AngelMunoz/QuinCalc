@@ -2,12 +2,11 @@
 using QuinCalc.Models;
 using QuinCalc.ViewModels;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -30,9 +29,32 @@ namespace QuinCalc.Views
 
     private async void LoadTodos()
     {
+      TodosList.Clear();
       using (var context = new QuincalcContext())
       {
-        TodosList = await GetTodoVMs(context);
+        var todos = await GetTodoVMs(context);
+        foreach (var todo in todos)
+        {
+          TodosList.Add(todo);
+        }
+      }
+
+      if (TodosList.Count < limitTodos)
+      {
+        NextBtn.IsEnabled = false;
+      }
+      else
+      {
+        NextBtn.IsEnabled = true;
+      }
+
+      if (skipTodos < 15)
+      {
+        BackBtn.IsEnabled = false;
+      }
+      else
+      {
+        BackBtn.IsEnabled = true;
       }
     }
 
@@ -53,14 +75,49 @@ namespace QuinCalc.Views
       return new ObservableCollection<TodoViewModel>(todos.Select(t => new TodoViewModel(t)));
     }
 
-    /// <summary>
-    /// Remove Todos From List
-    /// </summary>
-    /// <param name="selectedTodos"></param>
-    /// <returns></returns>
-    private async Task RemoveTodo(List<object> selectedTodos)
+    private async void CreateTodoBtn_Click(object sender, RoutedEventArgs e)
     {
-      throw new NotImplementedException();
+      using (var context = new QuincalcContext())
+      {
+        await context.Todos.AddAsync(new Todo());
+        await context.SaveChangesAsync();
+      }
+      LoadTodos();
+    }
+
+    private void SaveBtn_Click(object sender, RoutedEventArgs e)
+    {
+      SaveBtn.IsEnabled = false;
+      TodoViewModel current = MDView.SelectedItem as TodoViewModel;
+      using (var context = new QuincalcContext())
+      {
+        context.Todos.Update(current);
+        context.SaveChangesAsync();
+      }
+      SaveBtn.IsEnabled = true;
+    }
+
+    private void DeleteBtn_Click(object sender, RoutedEventArgs e)
+    {
+      SaveBtn.IsEnabled = false;
+      TodoViewModel current = MDView.SelectedItem as TodoViewModel;
+      using (var context = new QuincalcContext())
+      {
+        context.Todos.Remove(current);
+        context.SaveChangesAsync();
+      }
+      SaveBtn.IsEnabled = true;
+      LoadTodos();
+    }
+
+    private void NextBtn_Click(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    private void BackBtn_Click(object sender, RoutedEventArgs e)
+    {
+
     }
   }
 }
