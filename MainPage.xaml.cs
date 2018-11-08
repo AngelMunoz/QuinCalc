@@ -1,24 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
+﻿using Microsoft.EntityFrameworkCore;
 using QuinCalc.Models;
-using System.Collections.ObjectModel;
 using QuinCalc.ViewModels;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using QuinCalc.Views;
-using System.Diagnostics;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Windows.System;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media.Animation;
+using Windows.UI.Xaml.Navigation;
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
 namespace QuinCalc
@@ -30,73 +22,42 @@ namespace QuinCalc
   {
     public TodoViewModel UpNext { get; set; }
     public ExpenseViewModel UpNextExpense { get; set; }
-    public ObservableCollection<TodoViewModel> Todos { get; set; }
-    public ObservableCollection<ExpenseViewModel> Expenses { get; set; }
     public ExpenseViewModel NextQuin { get; set; }
-
-    public int skipTodos = 0;
-    public int limitTodos = 15;
 
     public int skipExpenses = 0;
     public int limitExpenses = 15;
 
     public MainPage()
     {
-      this.InitializeComponent();
-      LightsBtn.IsChecked = RequestedTheme == ElementTheme.Default || RequestedTheme == ElementTheme.Light;
-      this.LoadCollections();
+      InitializeComponent();
+      LoadCollections();
     }
+
+    private readonly List<(string Tag, Type Page)> _pages = new List<(string Tag, Type Page)>
+    {
+      ("Home", typeof(Home)),
+      ("Expenses", typeof(Expenses)),
+      ("Todos", typeof(Todos)),
+    };
+
 
     /// <summary>
     /// Loads useful Data from the Database when called
     /// </summary>
     /// <returns></returns>
-    private async Task LoadCollections()
+    private async void LoadCollections()
     {
       using (var context = new QuincalcContext())
       {
-        Todos = await GetTodoVMs(context);
-        Expenses = await GetExpenseVMs(context);
-        NextQuin = await GetNextQuin(context);
-      }
-      UpNext = GetUpnext(Todos);
-      UpNextExpense = GetUpNextExpense(Expenses);
-    }
-
-    private static async Task<ExpenseViewModel> GetNextQuin(QuincalcContext context)
-    {
-      int dayToCheck = GetDayToCheck();
-      decimal totalAmount = await GetTotalAmount(context, dayToCheck);
-      var vm = new ExpenseViewModel
-      {
-        DueDate = GetNextQuin(dayToCheck),
-        Amount = totalAmount
-      };
-      return vm;
-    }
-
-    /// <summary>
-    /// Use this method to Change Page 
-    /// </summary>
-    /// <param name="vm"></param>
-    /// <param name="skip"></param>
-    /// <param name="limit"></param>
-    public async void ChangePage(string vm, int skip = 0, int limit = 15)
-    {
-      using (var context = new QuincalcContext())
-      {
-        switch (vm)
+        int dayToCheck = GetDayToCheck();
+        decimal totalAmount = await GetTotalAmount(context, dayToCheck);
+        NextQuin = new ExpenseViewModel
         {
-          case "Todos":
-            Todos = await GetTodoVMs(context, skip, limit);
-            break;
-          case "Expenses":
-            Expenses = await GetExpenseVMs(context, skip, limit);
-            break;
-          default:
-            await new Windows.UI.Popups.MessageDialog("Woops That Should't Have Happened").ShowAsync();
-            break;
-        }
+          DueDate = GetNextQuin(dayToCheck),
+          Amount = totalAmount
+        };
+        UpNext = await GetUpnext(context);
+        UpNextExpense = await GetUpNextExpense(context);
       }
     }
 
@@ -105,9 +66,10 @@ namespace QuinCalc
     /// </summary>
     /// <param name="expenses"></param>
     /// <returns></returns>
-    private ExpenseViewModel GetUpNextExpense(ObservableCollection<ExpenseViewModel> expenses)
+    private async Task<ExpenseViewModel> GetUpNextExpense(QuincalcContext context)
     {
-      return expenses.OrderBy(e => Math.Abs((e.DueDate - DateTime.Now).Ticks)).FirstOrDefault();
+      var expense = await context.Expenses.OrderBy(e => Math.Abs((e.DueDate - DateTime.Now).Ticks)).FirstOrDefaultAsync();
+      return new ExpenseViewModel(expense);
     }
 
     /// <summary>
@@ -115,11 +77,13 @@ namespace QuinCalc
     /// </summary>
     /// <param name="todos"></param>
     /// <returns></returns>
-    private TodoViewModel GetUpnext(ObservableCollection<TodoViewModel> todos)
+    private async Task<TodoViewModel> GetUpnext(QuincalcContext context)
     {
-      return todos
+      var todo = await context.Todos
         .Where(t => !t.IsDone)
-        .FirstOrDefault();
+        .OrderBy(e => Math.Abs((e.DueDate - DateTime.Now).Ticks))
+        .FirstOrDefaultAsync();
+      return new TodoViewModel(todo);
     }
 
     /// <summary>
@@ -154,228 +118,119 @@ namespace QuinCalc
       return DateTime.Now.Day < 15 ? 15 : DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month);
     }
 
-    /// <summary>
-    /// Load from the Database the Expense View Models Apply Skip + limit if necessary
-    /// </summary>
-    /// <param name="context"></param>
-    /// <param name="skip"></param>
-    /// <param name="limit"></param>
-    /// <returns></returns>
-    private async Task<ObservableCollection<ExpenseViewModel>> GetExpenseVMs(QuincalcContext context, int skip = 0, int limit = 15)
+    private void NavigationView_Loaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
     {
-      var expenses = await context.Expenses
-                .OrderBy(e => e.DueDate)
-                .Skip(skip)
-                .Take(limit)
-                .ToListAsync();
-      return new ObservableCollection<ExpenseViewModel>(expenses.Select(e => new ExpenseViewModel(e)));
-    }
+      ContentFrame.Navigated += On_Navigated;
+      // NavView doesn't load any page by default, so load home page.
+      Nav.SelectedItem = Nav.MenuItems[0];
+      // If navigation occurs on SelectionChanged, this isn't needed.
+      // Because we use ItemInvoked to navigate, we need to call Navigate
+      // here to load the home page.
+      NavView_Navigate("Home", new EntranceNavigationTransitionInfo());
 
-    /// <summary>
-    /// Load from the Database the Todo View Models Apply Skip + limit if necessary
-    /// </summary>
-    /// <param name="context"></param>
-    /// <param name="skip"></param>
-    /// <param name="limit"></param>
-    /// <returns></returns>
-    private async Task<ObservableCollection<TodoViewModel>> GetTodoVMs(QuincalcContext context, int skip = 0, int limit = 15)
-    {
-      var todos = await context.Todos
-                .OrderBy(t => t.DueDate)
-                .Skip(skip)
-                .Take(limit)
-                .ToListAsync();
-      return new ObservableCollection<TodoViewModel>(todos.Select(t => new TodoViewModel(t)));
-    }
+      // Add keyboard accelerators for backwards navigation.
+      var goBack = new KeyboardAccelerator { Key = VirtualKey.GoBack };
+      goBack.Invoked += BackInvoked;
+      KeyboardAccelerators.Add(goBack);
 
-    /// <summary>
-    /// Navigate To Add Expense View
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    private void AddExpense_Click(object sender, RoutedEventArgs e)
-    {
-      Frame.Navigate(typeof(ExpenseForm));
-    }
-
-    /// <summary>
-    /// Navigate To Add Todo View
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    private void AddTodo_Click(object sender, RoutedEventArgs e)
-    {
-      Frame.Navigate(typeof(TodoForm));
-    }
-
-    /// <summary>
-    /// Handles Selection From expenses
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    private void ExpensesList_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-      if (ExpensesList.SelectedItems.Count > 0)
+      // ALT routes here
+      var altLeft = new KeyboardAccelerator
       {
-        DeleteBtn.Visibility = Visibility.Visible;
+        Key = VirtualKey.Left,
+        Modifiers = VirtualKeyModifiers.Menu
+      };
+      altLeft.Invoked += BackInvoked;
+      KeyboardAccelerators.Add(altLeft);
+
+    }
+
+    private void NavigationView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
+    {
+      if (args.IsSettingsInvoked == true)
+      {
+        NavView_Navigate("settings", new SlideNavigationTransitionInfo());
+      }
+      else if (args.InvokedItem != null)
+      {
+        var navItemTag = args.InvokedItem;
+        NavView_Navigate(navItemTag as string, new SlideNavigationTransitionInfo());
+      }
+    }
+
+    private void BackInvoked(KeyboardAccelerator sender,
+                         KeyboardAcceleratorInvokedEventArgs args)
+    {
+      On_BackRequested();
+      args.Handled = true;
+    }
+
+    private bool On_BackRequested()
+    {
+      if (!ContentFrame.CanGoBack)
+        return false;
+
+      // Don't go back if the nav pane is overlayed.
+      if (Nav.IsPaneOpen &&
+          (Nav.DisplayMode == NavigationViewDisplayMode.Compact ||
+           Nav.DisplayMode == NavigationViewDisplayMode.Minimal))
+        return false;
+
+      ContentFrame.GoBack();
+      return true;
+    }
+
+    private void NavView_BackRequested(NavigationView sender,
+                                   NavigationViewBackRequestedEventArgs args)
+    {
+      On_BackRequested();
+    }
+
+
+    private void NavView_Navigate(string navItemTag, NavigationTransitionInfo transitionInfo)
+    {
+      Type _page = null;
+      if (navItemTag == "settings")
+      {
+        _page = typeof(Settings);
       }
       else
       {
-        DeleteBtn.Visibility = Visibility.Collapsed;
+        var item = _pages.FirstOrDefault(p => p.Tag.Equals(navItemTag));
+        _page = item.Page;
       }
+      // Get the page type before navigation so you can prevent duplicate
+      // entries in the backstack.
+      var preNavPageType = ContentFrame.CurrentSourcePageType;
 
-      if (TodosList.SelectedItems.Count == 0 && ExpensesList.SelectedItems.Count == 1)
+      // Only navigate if the selected page isn't currently loaded.
+      if (!(_page is null) && !Type.Equals(preNavPageType, _page))
       {
-        EditBtn.Visibility = Visibility.Visible;
-      }
-      else
-      {
-        EditBtn.Visibility = Visibility.Collapsed;
+        ContentFrame.Navigate(_page, null, transitionInfo);
       }
     }
 
-    /// <summary>
-    /// Handles Selection From Todos
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    private void TodosList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+
+    private void On_Navigated(object sender, NavigationEventArgs e)
     {
-      if (TodosList.SelectedItems.Count > 0)
-      {
-        DeleteBtn.Visibility = Visibility.Visible;
-      }
-      else
-      {
-        DeleteBtn.Visibility = Visibility.Collapsed;
-      }
+      Nav.IsBackEnabled = ContentFrame.CanGoBack;
 
-      if (TodosList.SelectedItems.Count == 1 && ExpensesList.SelectedItems.Count == 0)
+      if (ContentFrame.SourcePageType == typeof(Settings))
       {
-        EditBtn.Visibility = Visibility.Visible;
+        // SettingsItem is not part of NavView.MenuItems, and doesn't have a Tag.
+        Nav.SelectedItem = (NavigationViewItem)Nav.SettingsItem;
+        Nav.Header = "Settings";
       }
-      else
+      else if (ContentFrame.SourcePageType != null)
       {
-        EditBtn.Visibility = Visibility.Collapsed;
-      }
-    }
+        var item = _pages.FirstOrDefault(p => p.Page == e.SourcePageType);
 
-    /// <summary>
-    /// Handles Delete button action
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    private async void DeleteBtn_Click(object sender, RoutedEventArgs e)
-    {
-      var selectedExpenses = ExpensesList.SelectedItems.ToList();
-      var selectedTodos = TodosList.SelectedItems.ToList();
-      await RemoveExpensesFromList(selectedExpenses);
-      await RemoveTodosFromList(selectedTodos);
+        Nav.SelectedItem = Nav.MenuItems
+            .OfType<NavigationViewItem>()
+            .First(n => n.Tag.Equals(item.Tag));
 
-      var upnext = GetUpnext(Todos);
-      var upnextexpense = GetUpNextExpense(Expenses);
-      if (upnext != null)
-      {
-        UpNext.Name = upnext.Name;
-        UpNext.Description = upnext.Description;
-        UpNext.DueDate = upnext.DueDate;
-        UpNext.IsDone = upnext.IsDone;
+        Nav.Header =
+            ((NavigationViewItem)Nav.SelectedItem)?.Content?.ToString();
       }
-      else
-      {
-        if(UpNext !=  null)
-        {
-          UpNext.Name = "";
-          UpNext.Description = "";
-          UpNext.DueDate = NextQuin.DueDate;
-          UpNext.IsDone = false;
-        }
-      }
-      if (upnextexpense != null)
-      {
-        UpNextExpense.Name = upnextexpense.Name;
-        UpNextExpense.Amount = upnextexpense.Amount;
-        UpNextExpense.DueDate = upnextexpense.DueDate;
-      }
-      else
-      {
-        if(UpNextExpense != null)
-        {
-          UpNextExpense.Name = "";
-          UpNextExpense.Amount = 0;
-          UpNextExpense.DueDate = NextQuin.DueDate;
-        }
-      }
-    }
-
-    /// <summary>
-    /// Remove Expenses From List
-    /// </summary>
-    /// <param name="selectedExpenses"></param>
-    /// <returns></returns>
-    private async Task RemoveExpensesFromList(List<object> selectedExpenses)
-    {
-      if (selectedExpenses.Count > 0)
-      {
-        using (var context = new QuincalcContext())
-        {
-          foreach (ExpenseViewModel item in selectedExpenses)
-          {
-            context.Expenses.Remove(item);
-            Expenses.Remove(item);
-          }
-          await context.SaveChangesAsync();
-          var nextquin = await GetNextQuin(context);
-
-          NextQuin.Name = nextquin.Name;
-          NextQuin.Amount = nextquin.Amount;
-          NextQuin.DueDate = nextquin.DueDate;
-        }
-      }
-    }
-
-    /// <summary>
-    /// Remove Todos From List
-    /// </summary>
-    /// <param name="selectedTodos"></param>
-    /// <returns></returns>
-    private async Task RemoveTodosFromList(List<object> selectedTodos)
-    {
-      if (selectedTodos.Count > 0)
-      {
-        using (var context = new QuincalcContext())
-        {
-          foreach (TodoViewModel item in selectedTodos)
-          {
-            context.Todos.Remove(item);
-            Todos.Remove(item);
-          }
-          await context.SaveChangesAsync();
-        }
-      }
-    }
-
-    /// <summary>
-    /// Handles Edit button action
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    private void EditBtn_Click(object sender, RoutedEventArgs e)
-    {
-      var selected = ExpensesList.SelectedItem ?? TodosList.SelectedItem;
-      if (selected.GetType().Name == "ExpenseViewModel")
-      {
-        Frame.Navigate(typeof(ExpenseForm), selected);
-      }
-      else
-      {
-        Frame.Navigate(typeof(TodoForm), selected);
-      }
-    }
-
-    private void LightsBtn_Click(object sender, RoutedEventArgs e)
-    {
-      RequestedTheme = LightsBtn.IsChecked.Value ? ElementTheme.Light : ElementTheme.Dark;
     }
   }
 }
