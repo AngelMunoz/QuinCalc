@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Toolkit.Uwp.UI.Controls;
 using QuinCalc.Models;
 using QuinCalc.ViewModels;
 using System;
@@ -25,6 +26,20 @@ namespace QuinCalc.Views
     {
       InitializeComponent();
       LoadTodos();
+      CheckViewState();
+    }
+
+    private void CheckViewState()
+    {
+      switch (MDView.ViewState)
+      {
+        case MasterDetailsViewState.Master:
+          AddMobileBtn.Visibility = Windows.UI.Xaml.Visibility.Visible;
+          break;
+        default:
+          AddMobileBtn.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+          break;
+      }
     }
 
     private async void LoadTodos()
@@ -108,6 +123,19 @@ namespace QuinCalc.Views
       }
       SaveBtn.IsEnabled = true;
       LoadTodos();
+    }
+
+    private void MDView_ViewStateChanged(object sender, MasterDetailsViewState e)
+    {
+      switch (e)
+      {
+        case MasterDetailsViewState.Master:
+          AddMobileBtn.Visibility = Windows.UI.Xaml.Visibility.Visible;
+          break;
+        default:
+          AddMobileBtn.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+          break;
+      }
     }
 
     private void NextBtn_Click(object sender, RoutedEventArgs e)

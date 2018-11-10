@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Toolkit.Uwp.UI.Controls;
 using QuinCalc.Models;
 using QuinCalc.ViewModels;
 using System;
@@ -25,6 +26,20 @@ namespace QuinCalc.Views
     {
       InitializeComponent();
       LoadExpenses();
+      CheckViewState();
+    }
+
+    private void CheckViewState()
+    {
+      switch (MDView.ViewState)
+      {
+        case MasterDetailsViewState.Master:
+          AddMobileBtn.Visibility = Windows.UI.Xaml.Visibility.Visible;
+          break;
+        default:
+          AddMobileBtn.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+          break;
+      }
     }
 
     private async void LoadExpenses()
@@ -79,7 +94,7 @@ namespace QuinCalc.Views
     {
       using (var context = new QuincalcContext())
       {
-        await context.Expenses.AddAsync(new Expense());
+        await context.Expenses.AddAsync(new Expense() { DueDate = DateTime.Now });
         await context.SaveChangesAsync();
       }
       LoadExpenses();
@@ -110,6 +125,19 @@ namespace QuinCalc.Views
       LoadExpenses();
     }
 
+    private void MDView_ViewStateChanged(object sender, MasterDetailsViewState e)
+    {
+      switch (e)
+      {
+        case MasterDetailsViewState.Master:
+          AddMobileBtn.Visibility = Windows.UI.Xaml.Visibility.Visible;
+          break;
+        default:
+          AddMobileBtn.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+          break;
+      }
+    }
+
     private void BackBtn_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
     {
 
@@ -119,6 +147,5 @@ namespace QuinCalc.Views
     {
 
     }
-
   }
 }

@@ -11,19 +11,21 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <Page.Resources>
         <converters:DecimalConverter x:Key="DecimalConverter" />
+        <converters:DateTimeConverter x:Key="DateTimeConverter" />
     </Page.Resources>
     <controls:MasterDetailsView BackButtonBehavior="Automatic" 
                                 ItemsSource="{x:Bind ExpensesList}"
                                 NoSelectionContent="Select an expense to view"
                                 CompactModeThresholdWidth="720"
                                 x:Name="MDView"
+                                ViewStateChanged="MDView_ViewStateChanged"
                                 >
         <controls:MasterDetailsView.ItemTemplate>
             <DataTemplate>
                 <StackPanel Margin="0,8">
                     <TextBlock MaxLines="1" Text="{Binding Name}"/>
                     <TextBlock Text="{Binding Amount}"/>
-                    <TextBlock Text="{Binding DueDate}"/>
+                    <TextBlock Text="{Binding DueDate, Converter={StaticResource DateTimeConverter}, Mode=OneWay}"/>
                 </StackPanel>
             </DataTemplate>
         </controls:MasterDetailsView.ItemTemplate>
@@ -36,7 +38,7 @@
                     <TextBlock Text="Amount"/>
                     <TextBox PlaceholderText="Expense Amount" Text="{Binding Amount, Converter={StaticResource DecimalConverter}, Mode=TwoWay}"/>
                     <TextBlock Text="Due To"/>
-                    <DatePicker Name="DatePickerCtrl" Date="{Binding DueDate, Mode=TwoWay}"/>
+                    <DatePicker Name="DatePickerCtrl" Date="{Binding DueDate, Converter={StaticResource DateTimeConverter}, Mode=TwoWay}"/>
                 </StackPanel>
             </DataTemplate>
         </controls:MasterDetailsView.DetailsTemplate>
@@ -66,6 +68,7 @@
         </controls:MasterDetailsView.NoSelectionContentTemplate>
         <controls:MasterDetailsView.MasterCommandBar>
             <CommandBar>
+                <AppBarButton x:Name="AddMobileBtn" Icon="Add" Label="Add New" Visibility="Collapsed" Click="CreateExpenseBtn_Click" />
                 <AppBarButton Icon="Back" Label="Back" x:Name="BackBtn" Click="BackBtn_Click"/>
                 <AppBarButton Icon="Forward" Label="Forward" x:Name="NextBtn" Click="NextBtn_Click"/>
                 <CommandBar.Content>
