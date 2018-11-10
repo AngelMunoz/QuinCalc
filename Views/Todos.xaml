@@ -1,0 +1,91 @@
+﻿<Page
+    x:Class="QuinCalc.Views.Todos"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:QuinCalc.Views"
+    xmlns:converters="using:QuinCalc.Converters"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Page.Resources>
+        <converters:DateTimeConverter x:Key="DateTimeConverter" />
+    </Page.Resources>
+    <controls:MasterDetailsView BackButtonBehavior="Automatic" 
+                                ItemsSource="{x:Bind TodosList}"
+                                NoSelectionContent="Select an to-do to view"
+                                CompactModeThresholdWidth="720"
+                                x:Name="MDView"
+                                ViewStateChanged="MDView_ViewStateChanged">
+        <controls:MasterDetailsView.ItemTemplate>
+            <DataTemplate>
+                <StackPanel Margin="0,8">
+                    <TextBlock MaxLines="1" Text="{Binding Name}"/>
+                    <TextBlock MaxLines="3" Text="{Binding Description}"/>
+                    <TextBlock Text="{Binding DueDate, Converter={StaticResource DateTimeConverter}}"/>
+                    <CheckBox IsChecked="{Binding IsDone}" IsEnabled="False" VerticalAlignment="Center"  HorizontalAlignment="Right"/>
+                </StackPanel>
+            </DataTemplate>
+        </controls:MasterDetailsView.ItemTemplate>
+        <controls:MasterDetailsView.DetailsTemplate>
+            <DataTemplate>
+                <!-- Info/Resume Panel -->
+                <StackPanel>
+                    <StackPanel HorizontalAlignment="Left" Height="auto">
+                        <TextBlock Text="Name"/>
+                        <TextBox PlaceholderText="Todo's Name" Text="{Binding Name, Mode=TwoWay}"/>
+                        <TextBlock Text="Description"/>
+                        <TextBox PlaceholderText="Todo's Description" Text="{Binding Description, Mode=TwoWay}"/>
+                        <TextBlock Text="Due To"/>
+                        <DatePicker Name="DatePickerCtrl" Date="{Binding DueDate,Converter={StaticResource DateTimeConverter}, Mode=TwoWay}"/>
+                        <TextBlock Text="Is Done"/>
+                        <CheckBox IsChecked="{Binding IsDone, Mode=TwoWay}"/>
+                    </StackPanel>
+                </StackPanel>
+            </DataTemplate>
+        </controls:MasterDetailsView.DetailsTemplate>
+        <controls:MasterDetailsView.NoSelectionContentTemplate>
+            <DataTemplate>
+                <StackPanel HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                    <SymbolIcon Symbol="List" RenderTransformOrigin=".5,.5">
+                        <SymbolIcon.RenderTransform>
+                            <CompositeTransform 
+                                        ScaleX="2" 
+                                        ScaleY="2"/>
+                        </SymbolIcon.RenderTransform>
+                    </SymbolIcon>
+                    <TextBlock Text="{Binding}" 
+                                   FontSize="24" 
+                                   Margin="0,12"/>
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Text="Or Create A Fresh One" Margin="5" FontSize="24"/>
+                    <Button x:Name="CreateTodoBtn" Height="40" Width="40" HorizontalAlignment="Center" Click="CreateTodoBtn_Click">
+                        <SymbolIcon Symbol="Add" />
+                    </Button>
+                </StackPanel>
+                </StackPanel>
+            </DataTemplate>
+        </controls:MasterDetailsView.NoSelectionContentTemplate>
+        <controls:MasterDetailsView.MasterCommandBar>
+            <CommandBar>
+                <AppBarButton x:Name="AddMobileBtn" Icon="Add" Label="Add New" Visibility="Collapsed" Click="CreateTodoBtn_Click" />
+                <AppBarButton x:Name="NextBtn" Icon="Back" Label="Back" Click="NextBtn_Click"/>
+                <AppBarButton x:Name="BackBtn" Icon="Forward" Label="Forward" Click="BackBtn_Click"/>
+                <CommandBar.Content>
+                    <TextBlock Margin="12,14">
+                                <Run Text="{x:Bind TodosList.Count}" />
+                                <Run Text="To-do's" />
+                    </TextBlock>
+                </CommandBar.Content>
+            </CommandBar>
+        </controls:MasterDetailsView.MasterCommandBar>
+        <controls:MasterDetailsView.DetailsCommandBar>
+            <CommandBar>
+                <AppBarButton x:Name="SaveBtn" Icon="Save" Label="Save To-do" Click="SaveBtn_Click"/>
+                <AppBarButton x:Name="DeleteBtn" Icon="Delete" Label="Delete To-do" Click="DeleteBtn_Click" />
+            </CommandBar>
+        </controls:MasterDetailsView.DetailsCommandBar>
+    </controls:MasterDetailsView>
+</Page>

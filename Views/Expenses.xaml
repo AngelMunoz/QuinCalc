@@ -1,0 +1,89 @@
+﻿<Page
+    x:Class="QuinCalc.Views.Expenses"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:QuinCalc.Views"
+    xmlns:converters="using:QuinCalc.Converters"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Page.Resources>
+        <converters:DecimalConverter x:Key="DecimalConverter" />
+        <converters:DateTimeConverter x:Key="DateTimeConverter" />
+    </Page.Resources>
+    <controls:MasterDetailsView BackButtonBehavior="Automatic" 
+                                ItemsSource="{x:Bind ExpensesList}"
+                                NoSelectionContent="Select an expense to view"
+                                CompactModeThresholdWidth="720"
+                                x:Name="MDView"
+                                ViewStateChanged="MDView_ViewStateChanged"
+                                >
+        <controls:MasterDetailsView.ItemTemplate>
+            <DataTemplate>
+                <StackPanel Margin="0,8">
+                    <TextBlock MaxLines="1" Text="{Binding Name}"/>
+                    <TextBlock Text="{Binding Amount}"/>
+                    <TextBlock Text="{Binding DueDate, Converter={StaticResource DateTimeConverter}, Mode=OneWay}"/>
+                </StackPanel>
+            </DataTemplate>
+        </controls:MasterDetailsView.ItemTemplate>
+        <controls:MasterDetailsView.DetailsTemplate>
+            <DataTemplate>
+                <!-- Info/Resume Panel -->
+                <StackPanel>
+                    <TextBlock Text="Name"/>
+                    <TextBox PlaceholderText="Expense's Name" Text="{Binding Name, Mode=TwoWay}"/>
+                    <TextBlock Text="Amount"/>
+                    <TextBox PlaceholderText="Expense Amount" Text="{Binding Amount, Converter={StaticResource DecimalConverter}, Mode=TwoWay}"/>
+                    <TextBlock Text="Due To"/>
+                    <DatePicker Name="DatePickerCtrl" Date="{Binding DueDate, Converter={StaticResource DateTimeConverter}, Mode=TwoWay}"/>
+                </StackPanel>
+            </DataTemplate>
+        </controls:MasterDetailsView.DetailsTemplate>
+        <controls:MasterDetailsView.NoSelectionContentTemplate>
+            <DataTemplate>
+                <StackPanel HorizontalAlignment="Center" 
+                                VerticalAlignment="Center">
+                    <SymbolIcon Symbol="Calculator" 
+                                    RenderTransformOrigin=".5,.5">
+                        <SymbolIcon.RenderTransform>
+                            <CompositeTransform 
+                                  ScaleX="2" 
+                                  ScaleY="2"/>
+                        </SymbolIcon.RenderTransform>
+                    </SymbolIcon>
+                    <TextBlock Text="{Binding}" 
+                                   FontSize="24" 
+                                   Margin="0,12"/>
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBlock Text="Or Create A Fresh One" Margin="5" FontSize="24"/>
+                        <Button x:Name="CreateExpenseBtn" Height="40" Width="40" HorizontalAlignment="Center" Click="CreateExpenseBtn_Click">
+                            <SymbolIcon Symbol="Add" />
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </DataTemplate>
+        </controls:MasterDetailsView.NoSelectionContentTemplate>
+        <controls:MasterDetailsView.MasterCommandBar>
+            <CommandBar>
+                <AppBarButton x:Name="AddMobileBtn" Icon="Add" Label="Add New" Visibility="Collapsed" Click="CreateExpenseBtn_Click" />
+                <AppBarButton Icon="Back" Label="Back" x:Name="BackBtn" Click="BackBtn_Click"/>
+                <AppBarButton Icon="Forward" Label="Forward" x:Name="NextBtn" Click="NextBtn_Click"/>
+                <CommandBar.Content>
+                    <TextBlock Margin="12,14">
+                                <Run Text="{x:Bind ExpensesList.Count}" />
+                                <Run Text="Expenses" />
+                    </TextBlock>
+                </CommandBar.Content>
+            </CommandBar>
+        </controls:MasterDetailsView.MasterCommandBar>
+        <controls:MasterDetailsView.DetailsCommandBar>
+            <CommandBar>
+                <AppBarButton x:Name="SaveBtn" Icon="Save" Label="Save Changes" Click="SaveBtn_Click" />
+                <AppBarButton x:Name="DeleteBtn" Icon="Delete" Label="Delete Expense" Click="DeleteBtn_Click" />
+            </CommandBar>
+        </controls:MasterDetailsView.DetailsCommandBar>
+    </controls:MasterDetailsView>
+</Page>
