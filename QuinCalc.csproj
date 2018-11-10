@@ -20,9 +20,12 @@
     <PackageCertificateKeyFile>QuinCalc_StoreKey.pfx</PackageCertificateKeyFile>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
-    <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
-    <PackageCertificateThumbprint>51E9388D6C5323145DA81DF2421C722360912721</PackageCertificateThumbprint>
+    <AppxBundlePlatforms>x86|x64</AppxBundlePlatforms>
+    <PackageCertificateThumbprint>CE4DA6F6D87394E0AA260AAB6B1BA3383707D87E</PackageCertificateThumbprint>
     <AppxSymbolPackageEnabled>True</AppxSymbolPackageEnabled>
+    <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
+    <AppInstallerUpdateFrequency>1</AppInstallerUpdateFrequency>
+    <AppInstallerCheckForUpdateFrequency>OnApplicationRun</AppInstallerCheckForUpdateFrequency>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -134,6 +137,7 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <None Include="ClassDiagram1.cd" />
     <None Include="QuinCalc_StoreKey.pfx" />
     <None Include="QuinCalc_TemporaryKey.pfx" />
   </ItemGroup>
