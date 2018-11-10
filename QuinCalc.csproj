@@ -137,7 +137,6 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <None Include="ClassDiagram1.cd" />
     <None Include="QuinCalc_StoreKey.pfx" />
     <None Include="QuinCalc_TemporaryKey.pfx" />
   </ItemGroup>
