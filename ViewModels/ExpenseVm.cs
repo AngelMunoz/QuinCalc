@@ -1,15 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using QuinCalc.Helpers;
 using QuinCalc.Models;
 
 namespace QuinCalc.ViewModels
 {
-  public class ExpenseViewModel : NotificationBase<Expense>
+  public class ExpenseVm : NotificationBase<Expense>
   {
-    public ExpenseViewModel(Expense expense = null) : base(expense) { }
+    public ExpenseVm(Expense expense = null) : base(expense)
+    {
+      DueDate = DateTime.UtcNow;
+    }
 
     public string Name
     {

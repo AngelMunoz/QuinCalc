@@ -8,9 +8,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="{ThemeResource SystemControlAcrylicWindowBrush}">
     <Page.Resources>
-        <converters:DecimalConverter x:Key="DecimalConverter" />
+        <converters:CurrencyConverter x:Key="CurrencyConverter" />
         <converters:DateTimeConverter x:Key="DateTimeConverter" />
     </Page.Resources>
     <controls:MasterDetailsView BackButtonBehavior="Automatic" 
@@ -24,7 +24,7 @@
             <DataTemplate>
                 <StackPanel Margin="0,8">
                     <TextBlock MaxLines="1" Text="{Binding Name}"/>
-                    <TextBlock Text="{Binding Amount}"/>
+                    <TextBlock Text="{Binding Amount, Converter={StaticResource CurrencyConverter}}"/>
                     <TextBlock Text="{Binding DueDate, Converter={StaticResource DateTimeConverter}, Mode=OneWay}"/>
                 </StackPanel>
             </DataTemplate>
@@ -36,7 +36,7 @@
                     <TextBlock Text="Name"/>
                     <TextBox PlaceholderText="Expense's Name" Text="{Binding Name, Mode=TwoWay}"/>
                     <TextBlock Text="Amount"/>
-                    <TextBox PlaceholderText="Expense Amount" Text="{Binding Amount, Converter={StaticResource DecimalConverter}, Mode=TwoWay}"/>
+                    <TextBox PlaceholderText="Expense Amount" Text="{Binding Amount, Converter={StaticResource CurrencyConverter}, Mode=TwoWay}"/>
                     <TextBlock Text="Due To"/>
                     <DatePicker Name="DatePickerCtrl" Date="{Binding DueDate, Converter={StaticResource DateTimeConverter}, Mode=TwoWay}"/>
                 </StackPanel>
@@ -73,7 +73,7 @@
                 <AppBarButton Icon="Forward" Label="Forward" x:Name="NextBtn" Click="NextBtn_Click"/>
                 <CommandBar.Content>
                     <TextBlock Margin="12,14">
-                                <Run Text="{x:Bind ExpensesList.Count}" />
+                                <Run Text="{x:Bind TotalExpenseCount}" />
                                 <Run Text="Expenses" />
                     </TextBlock>
                 </CommandBar.Content>
