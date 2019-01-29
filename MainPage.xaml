@@ -3,28 +3,31 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:QuinCalc"
-    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:model="using:QuinCalc.ViewModels"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     RequestedTheme="Default"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <Grid>
-        <NavigationView
+        <muxc:NavigationView
             x:Name="Nav"
-            Loaded="NavigationView_Loaded"
-            ItemInvoked="NavigationView_ItemInvoked"
-            BackRequested="NavView_BackRequested"
+            Loaded="Nav_Loaded"
+            ItemInvoked="Nav_ItemInvoked"
+            BackRequested="Nav_BackRequested"
+            PaneDisplayMode="Top"
+            Background="{ThemeResource SystemControlAcrylicWindowBrush}"
             >
-            <NavigationView.MenuItems>
-                <NavigationViewItem Icon="Home" Content="Home" Tag="Home" />
-                <NavigationViewItem Icon="Calculator" Content="Expenses" Tag="Expenses"  />
-                <NavigationViewItem Icon="List" Content="Todos" Tag="Todos" />
-            </NavigationView.MenuItems>
+            <muxc:NavigationView.MenuItems>
+                <muxc:NavigationViewItem Icon="Home" Content="Home" Tag="Home" />
+                <muxc:NavigationViewItemSeparator/>
+                <muxc:NavigationViewItem Icon="Calculator" Content="Expenses" Tag="Expenses"  />
+                <muxc:NavigationViewItem Icon="List" Content="Todos" Tag="Todos" />
+            </muxc:NavigationView.MenuItems>
             <ScrollViewer>
-                <Frame x:Name="ContentFrame" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                <Frame x:Name="ContentFrame" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{ThemeResource SystemControlAcrylicWindowBrush}" />
             </ScrollViewer>
-        </NavigationView>
+        </muxc:NavigationView>
     </Grid>
 </Page>
