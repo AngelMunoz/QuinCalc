@@ -1,11 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.ObjectModel;
 using Microsoft.Toolkit.Uwp.UI.Controls;
 using QuinCalc.Models;
+using QuinCalc.Services;
 using QuinCalc.ViewModels;
-using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
@@ -17,14 +16,14 @@ namespace QuinCalc.Views
   /// </summary>
   public sealed partial class Expenses : Page
   {
-    public ObservableCollection<ExpenseViewModel> ExpensesList = new ObservableCollection<ExpenseViewModel>();
-
-    public int skipExpenses = 0;
-    public int limitExpenses = 15;
-
+    private ExpenseService ExpenseService;
+    public ObservableCollection<ExpenseVm> ExpensesList = new ObservableCollection<ExpenseVm>();
+    public int PageNum { get; private set; } = 1;
+    public int TotalExpenseCount { get; private set; } = 0;
     public Expenses()
     {
       InitializeComponent();
+      ExpenseService = new ExpenseService();
       LoadExpenses();
       CheckViewState();
     }
@@ -34,95 +33,66 @@ namespace QuinCalc.Views
       switch (MDView.ViewState)
       {
         case MasterDetailsViewState.Master:
-          AddMobileBtn.Visibility = Windows.UI.Xaml.Visibility.Visible;
+          AddMobileBtn.Visibility = Visibility.Visible;
           break;
         default:
-          AddMobileBtn.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+          AddMobileBtn.Visibility = Visibility.Collapsed;
           break;
       }
     }
 
-    private async void LoadExpenses()
+    private async void LoadExpenses(int page = 1, int limit = 10)
     {
+      var skip = (page - 1) * limit;
+      var (count, expenses) = await ExpenseService.Find(skip, limit);
+      TotalExpenseCount = count;
       ExpensesList.Clear();
-      using (var context = new QuincalcContext())
+      foreach (var expense in expenses)
       {
-        var expenses = await GetExpenseVMs(context);
-        foreach (var expense in expenses)
-        {
-          ExpensesList.Add(expense);
-        }
+        ExpensesList.Add(new ExpenseVm(expense));
       }
-
-      if (ExpensesList.Count < limitExpenses)
-      {
-        NextBtn.IsEnabled = false;
-      }
-      else
-      {
-        NextBtn.IsEnabled = true;
-      }
-
-      if (skipExpenses < 15)
-      {
-        BackBtn.IsEnabled = false;
-      }
-      else
-      {
-        BackBtn.IsEnabled = true;
-      }
+      NextBtn.IsEnabled = skip <= TotalExpenseCount;
+      BackBtn.IsEnabled = skip >= limit;
+      PageNum = page;
     }
 
-    /// <summary>
-    /// Load from the Database the Expense View Models Apply Skip + limit if necessary
-    /// </summary>
-    /// <param name="context"></param>
-    /// <param name="skip"></param>
-    /// <param name="limit"></param>
-    /// <returns></returns>
-    private async Task<ObservableCollection<ExpenseViewModel>> GetExpenseVMs(QuincalcContext context, int skip = 0, int limit = 15)
+    private async void CreateExpenseBtn_Click(object sender, RoutedEventArgs e)
     {
-      var expenses = await context.Expenses
-                .OrderBy(e => e.DueDate)
-                .Skip(skip)
-                .Take(limit)
-                .ToListAsync();
-      return new ObservableCollection<ExpenseViewModel>(expenses.Select(e => new ExpenseViewModel(e)));
-    }
-
-    private async void CreateExpenseBtn_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
-    {
-      using (var context = new QuincalcContext())
+      var success = await ExpenseService.Create(new Expense() { DueDate = DateTime.Now });
+      if (!success)
       {
-        await context.Expenses.AddAsync(new Expense() { DueDate = DateTime.Now });
-        await context.SaveChangesAsync();
+        // TODO: add unsuccessful code
+        return;
       }
       LoadExpenses();
     }
 
-    private void SaveBtn_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+    private async void SaveBtn_Click(object sender, RoutedEventArgs e)
     {
       SaveBtn.IsEnabled = false;
-      ExpenseViewModel current = MDView.SelectedItem as ExpenseViewModel;
-      using (var context = new QuincalcContext())
+      ExpenseVm current = MDView.SelectedItem as ExpenseVm;
+      var success = await ExpenseService.Update(current);
+      if (!success)
       {
-        context.Expenses.Update(current);
-        context.SaveChangesAsync();
+        // TODO: add unsuccessful code
+        return;
       }
+      LoadExpenses(PageNum);
       SaveBtn.IsEnabled = true;
     }
 
-    private void DeleteBtn_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+    private async void DeleteBtn_Click(object sender, RoutedEventArgs e)
     {
       SaveBtn.IsEnabled = false;
-      ExpenseViewModel current = MDView.SelectedItem as ExpenseViewModel;
-      using (var context = new QuincalcContext())
+      ExpenseVm current = MDView.SelectedItem as ExpenseVm;
+      var success = await ExpenseService.Destroy(current);
+      if (!success)
       {
-        context.Expenses.Remove(current);
-        context.SaveChangesAsync();
+        // TODO: add unsuccessful code
+        return;
       }
       SaveBtn.IsEnabled = true;
-      LoadExpenses();
+      LoadExpenses(PageNum);
     }
 
     private void MDView_ViewStateChanged(object sender, MasterDetailsViewState e)
@@ -130,22 +100,22 @@ namespace QuinCalc.Views
       switch (e)
       {
         case MasterDetailsViewState.Master:
-          AddMobileBtn.Visibility = Windows.UI.Xaml.Visibility.Visible;
+          AddMobileBtn.Visibility = Visibility.Visible;
           break;
         default:
-          AddMobileBtn.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+          AddMobileBtn.Visibility = Visibility.Collapsed;
           break;
       }
     }
 
-    private void BackBtn_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+    private void BackBtn_Click(object sender, RoutedEventArgs e)
     {
-
+      LoadExpenses(PageNum - 1);
     }
 
-    private void NextBtn_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+    private void NextBtn_Click(object sender, RoutedEventArgs e)
     {
-
+      LoadExpenses(PageNum + 1);
     }
   }
 }

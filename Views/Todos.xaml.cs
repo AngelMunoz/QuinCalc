@@ -18,7 +18,7 @@ namespace QuinCalc.Views
   /// </summary>
   public sealed partial class Todos : Page
   {
-    public ObservableCollection<TodoViewModel> TodosList = new ObservableCollection<TodoViewModel>();
+    public ObservableCollection<TodoVm> TodosList = new ObservableCollection<TodoVm>();
     public int skipTodos = 0;
     public int limitTodos = 15;
 
@@ -80,14 +80,14 @@ namespace QuinCalc.Views
     /// <param name="skip"></param>
     /// <param name="limit"></param>
     /// <returns></returns>
-    private async Task<ObservableCollection<TodoViewModel>> GetTodoVMs(QuincalcContext context, int skip = 0, int limit = 15)
+    private async Task<ObservableCollection<TodoVm>> GetTodoVMs(QuincalcContext context, int skip = 0, int limit = 15)
     {
       var todos = await context.Todos
                 .OrderBy(t => t.DueDate)
                 .Skip(skip)
                 .Take(limit)
                 .ToListAsync();
-      return new ObservableCollection<TodoViewModel>(todos.Select(t => new TodoViewModel(t)));
+      return new ObservableCollection<TodoVm>(todos.Select(t => new TodoVm(t)));
     }
 
     private async void CreateTodoBtn_Click(object sender, RoutedEventArgs e)
@@ -103,7 +103,7 @@ namespace QuinCalc.Views
     private void SaveBtn_Click(object sender, RoutedEventArgs e)
     {
       SaveBtn.IsEnabled = false;
-      TodoViewModel current = MDView.SelectedItem as TodoViewModel;
+      TodoVm current = MDView.SelectedItem as TodoVm;
       using (var context = new QuincalcContext())
       {
         context.Todos.Update(current);
@@ -115,7 +115,7 @@ namespace QuinCalc.Views
     private void DeleteBtn_Click(object sender, RoutedEventArgs e)
     {
       SaveBtn.IsEnabled = false;
-      TodoViewModel current = MDView.SelectedItem as TodoViewModel;
+      TodoVm current = MDView.SelectedItem as TodoVm;
       using (var context = new QuincalcContext())
       {
         context.Todos.Remove(current);
