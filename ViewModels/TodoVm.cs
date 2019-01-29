@@ -1,15 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using QuinCalc.Helpers;
 using QuinCalc.Models;
 
 namespace QuinCalc.ViewModels
 {
-  public class TodoViewModel : NotificationBase<Todo>
+  public class TodoVm : NotificationBase<Todo>
   {
-    public TodoViewModel(Todo todo = null) : base(todo) { }
+    public TodoVm(Todo todo = null) : base(todo)
+    {
+      DueDate = DateTime.UtcNow;
+    }
 
     public string Name
     {
