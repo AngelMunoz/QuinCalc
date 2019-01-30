@@ -1,9 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Windows.Storage;
 
 namespace QuinCalc.Models
 {
@@ -14,7 +10,8 @@ namespace QuinCalc.Models
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-      optionsBuilder.UseSqlite("Data Source=Quincalc.db");
+      var folder = ApplicationData.Current.LocalFolder;
+      optionsBuilder.UseSqlite($"Data Source={folder.Path}\\Quincalc.db");
     }
 
   }
