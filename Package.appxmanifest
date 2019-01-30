@@ -23,6 +23,14 @@
         </uap:DefaultTile>
         <uap:SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="white" />
       </uap:VisualElements>
+      <Extensions>
+        <uap:Extension Category="windows.protocol" EntryPoint="QuinCalc.App">
+          <uap:Protocol Name="quincalc">
+            <uap:Logo>Assets\StoreLogo.png</uap:Logo>
+            <uap:DisplayName>QuinCalc</uap:DisplayName>
+          </uap:Protocol>
+        </uap:Extension>
+      </Extensions>
     </Application>
   </Applications>
 </Package>

@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Globalization;
+using QuinCalc.Helpers;
 using Windows.UI.Xaml.Data;
 
 namespace QuinCalc.Converters
@@ -7,14 +10,21 @@ namespace QuinCalc.Converters
   {
     public object Convert(object value, Type targetType, object parameter, string language)
     {
-      DateTime.TryParse((value ?? "").ToString(), out DateTime date);
-      return date.ToShortDateString();
+      try
+      {
+        var dto = (DateTimeOffset)value;
+        return dto.DateTime.ToLongDateString();
+      }
+      catch (Exception ex)
+      {
+        Debug.WriteLine(ex.Message, "Converters:DatetimeConverter:Convert");
+        return DateTimeOffset.MinValue;
+      }
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, string language)
     {
-      DateTime.TryParse((value ?? "").ToString(), out DateTime date);
-      return date;
+      throw new NotImplementedException();
     }
   }
 }

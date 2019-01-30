@@ -8,7 +8,6 @@ namespace QuinCalc.ViewModels
   {
     public ExpenseVm(Expense expense = null) : base(expense)
     {
-      DueDate = DateTime.UtcNow;
     }
 
     public string Name
@@ -23,7 +22,7 @@ namespace QuinCalc.ViewModels
       set { SetProperty(This.Amount, value, () => This.Amount = value); }
     }
 
-    public DateTime DueDate
+    public DateTimeOffset DueDate
     {
       get { return This.DueDate; }
       set { SetProperty(This.DueDate, value, () => This.DueDate = value); }

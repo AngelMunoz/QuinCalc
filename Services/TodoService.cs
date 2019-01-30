@@ -8,20 +8,20 @@ using QuinCalc.Models;
 
 namespace QuinCalc.Services
 {
-  public class ExpenseService : IBasicService<Expense>, IDisposable
+  public class TodoService : IBasicService<Todo>, IDisposable
   {
     private QuincalcContext _context;
 
-    public ExpenseService(QuincalcContext context = null)
+    public TodoService(QuincalcContext context = null)
     {
       _context = context ?? new QuincalcContext();
     }
 
-    public async Task<bool> Create(Expense item)
+    public async Task<bool> Create(Todo item)
     {
       try
       {
-        await _context.Expenses.AddAsync(item);
+        await _context.Todos.AddAsync(item);
         await _context.SaveChangesAsync();
         return true;
       }
@@ -32,11 +32,11 @@ namespace QuinCalc.Services
       }
     }
 
-    public async Task<bool> Destroy(Expense item)
+    public async Task<bool> Destroy(Todo item)
     {
       try
       {
-        _context.Expenses.Remove(item);
+        _context.Todos.Remove(item);
         await _context.SaveChangesAsync();
         return true;
       }
@@ -47,23 +47,23 @@ namespace QuinCalc.Services
       }
     }
 
-    public async Task<(int, List<Expense>)> Find(int skip, int limit)
+    public async Task<(int, List<Todo>)> Find(int skip, int limit)
     {
-      var count = _context.Expenses.Count();
-      var expenses = await _context.Expenses
+      var count = _context.Todos.Count();
+      var todos = await _context.Todos
                 .OrderBy(e => Math.Abs((e.DueDate - DateTimeOffset.Now).Ticks))
                 .Skip(skip)
                 .Take(limit)
                 .ToListAsync();
-      return (count, expenses);
+      return (count, todos);
 
     }
 
-    public async Task<bool> Update(Expense item)
+    public async Task<bool> Update(Todo item)
     {
       try
       {
-        _context.Expenses.Update(item);
+        _context.Todos.Update(item);
         await _context.SaveChangesAsync();
         return true;
       }
@@ -72,14 +72,6 @@ namespace QuinCalc.Services
         Debug.WriteLine(e.StackTrace, "Service:Error:Update");
         return false;
       }
-    }
-
-    public async Task<Expense> FindClosest()
-    {
-      var expense = await _context.Expenses
-        .OrderBy(e => Math.Abs((e.DueDate - DateTimeOffset.Now).Ticks))
-        .FirstOrDefaultAsync();
-      return expense;
     }
 
     public void Dispose()

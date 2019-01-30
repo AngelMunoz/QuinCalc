@@ -14,7 +14,6 @@ namespace QuinCalc.Converters
 
     public object ConvertBack(object value, Type targetType, object parameter, string language)
     {
-      var culture = new CultureInfo(language);
       var preval = ((string)value).ToString(CultureInfo.CurrentCulture);
       if (decimal.TryParse(preval, out decimal result)) { return result; }
       return value;

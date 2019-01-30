@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using QuinCalc.Views;
+using Windows.ApplicationModel.Activation;
 using Windows.System;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -21,6 +22,7 @@ namespace QuinCalc
     public MainPage()
     {
       InitializeComponent();
+      ContentFrame.Navigated += On_Navigated;
     }
 
     private readonly List<(string Tag, Type Page)> _pages = new List<(string Tag, Type Page)>
@@ -32,13 +34,15 @@ namespace QuinCalc
 
     private void Nav_Loaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
     {
-      ContentFrame.Navigated += On_Navigated;
-      // NavView doesn't load any page by default, so load home page.
-      Nav.SelectedItem = Nav.MenuItems[0];
-      // If navigation occurs on SelectionChanged, this isn't needed.
-      // Because we use ItemInvoked to navigate, we need to call Navigate
-      // here to load the home page.
-      NavView_Navigate("Home", new EntranceNavigationTransitionInfo());
+      if(Nav.SelectedItem == null)
+      {
+        // NavView doesn't load any page by default, so load home page.
+        Nav.SelectedItem = Nav.MenuItems[0];
+        // If navigation occurs on SelectionChanged, this isn't needed.
+        // Because we use ItemInvoked to navigate, we need to call Navigate
+        // here to load the home page.
+        NavView_Navigate("Home", new EntranceNavigationTransitionInfo());
+      }
 
       // Add keyboard accelerators for backwards navigation.
       var goBack = new KeyboardAccelerator { Key = VirtualKey.GoBack };
@@ -60,12 +64,12 @@ namespace QuinCalc
     {
       if (args.IsSettingsInvoked == true)
       {
-        NavView_Navigate("settings", new SlideNavigationTransitionInfo());
+        NavView_Navigate("settings", new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromBottom });
       }
       else if (args.InvokedItem != null)
       {
         var navItemTag = args.InvokedItem;
-        NavView_Navigate(navItemTag as string, new SlideNavigationTransitionInfo());
+        NavView_Navigate(navItemTag as string, new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight });
       }
     }
 
@@ -142,6 +146,17 @@ namespace QuinCalc
 
         Nav.Header =
             ((muxc.NavigationViewItem)Nav.SelectedItem)?.Content?.ToString();
+      }
+    }
+
+    protected override void OnNavigatedTo(NavigationEventArgs e)
+    {
+      base.OnNavigatedTo(e);
+      var param = e.Parameter as ToastNotificationActivatedEventArgs;
+      var expenses = param?.Argument.Contains("viewExpenses");
+      if(expenses != null && expenses == true)
+      {
+        NavView_Navigate("Expenses", new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight });
       }
     }
   }
