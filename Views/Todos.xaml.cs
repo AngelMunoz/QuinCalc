@@ -1,11 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Collections.ObjectModel;
 using Microsoft.Toolkit.Uwp.UI.Controls;
 using QuinCalc.Models;
+using QuinCalc.Services;
 using QuinCalc.ViewModels;
-using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -19,8 +16,8 @@ namespace QuinCalc.Views
   public sealed partial class Todos : Page
   {
     public ObservableCollection<TodoVm> TodosList = new ObservableCollection<TodoVm>();
-    public int skipTodos = 0;
-    public int limitTodos = 15;
+    public int PageNum { get; private set; } = 1;
+    public int TotalTodoCount { get; private set; } = 0;
 
     public Todos()
     {
@@ -34,95 +31,78 @@ namespace QuinCalc.Views
       switch (MDView.ViewState)
       {
         case MasterDetailsViewState.Master:
-          AddMobileBtn.Visibility = Windows.UI.Xaml.Visibility.Visible;
+          AddMobileBtn.Visibility = Visibility.Visible;
           break;
         default:
-          AddMobileBtn.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+          AddMobileBtn.Visibility = Visibility.Collapsed;
           break;
       }
     }
 
-    private async void LoadTodos()
+    private async void LoadTodos(int page = 1, int limit = 5)
     {
-      TodosList.Clear();
-      using (var context = new QuincalcContext())
+      var skip = (page - 1) * limit;
+      using (var todservice = new TodoService())
       {
-        var todos = await GetTodoVMs(context);
+        var (count, todos) = await todservice.Find(skip, limit);
+        TotalTodoCount = count;
+        TodosList.Clear();
         foreach (var todo in todos)
         {
-          TodosList.Add(todo);
+          TodosList.Add(new TodoVm(todo));
         }
       }
-
-      if (TodosList.Count < limitTodos)
-      {
-        NextBtn.IsEnabled = false;
-      }
-      else
-      {
-        NextBtn.IsEnabled = true;
-      }
-
-      if (skipTodos < 15)
-      {
-        BackBtn.IsEnabled = false;
-      }
-      else
-      {
-        BackBtn.IsEnabled = true;
-      }
-    }
-
-    /// <summary>
-    /// Load from the Database the Todo View Models Apply Skip + limit if necessary
-    /// </summary>
-    /// <param name="context"></param>
-    /// <param name="skip"></param>
-    /// <param name="limit"></param>
-    /// <returns></returns>
-    private async Task<ObservableCollection<TodoVm>> GetTodoVMs(QuincalcContext context, int skip = 0, int limit = 15)
-    {
-      var todos = await context.Todos
-                .OrderBy(t => t.DueDate)
-                .Skip(skip)
-                .Take(limit)
-                .ToListAsync();
-      return new ObservableCollection<TodoVm>(todos.Select(t => new TodoVm(t)));
+      NextBtn.IsEnabled = skip <= TotalTodoCount;
+      BackBtn.IsEnabled = skip >= limit;
+      PageNum = page;
     }
 
     private async void CreateTodoBtn_Click(object sender, RoutedEventArgs e)
     {
-      using (var context = new QuincalcContext())
+      using (var todservice = new TodoService())
       {
-        await context.Todos.AddAsync(new Todo());
-        await context.SaveChangesAsync();
+        var success = await todservice.Create(new Todo { DueDate = DateService.GetNextQuin() });
+        if (!success)
+        {
+          // TODO: add unsuccessful code
+          return;
+        }
       }
       LoadTodos();
     }
 
-    private void SaveBtn_Click(object sender, RoutedEventArgs e)
+    private async void SaveBtn_Click(object sender, RoutedEventArgs e)
     {
       SaveBtn.IsEnabled = false;
       TodoVm current = MDView.SelectedItem as TodoVm;
-      using (var context = new QuincalcContext())
+      using (var todservice = new TodoService())
       {
-        context.Todos.Update(current);
-        context.SaveChangesAsync();
+        var success = await todservice.Update(current);
+        if (!success)
+        {
+          // TODO: add unsuccessful code
+          return;
+        }
       }
+      LoadTodos(PageNum);
       SaveBtn.IsEnabled = true;
     }
 
-    private void DeleteBtn_Click(object sender, RoutedEventArgs e)
+    private async void DeleteBtn_Click(object sender, RoutedEventArgs e)
     {
       SaveBtn.IsEnabled = false;
       TodoVm current = MDView.SelectedItem as TodoVm;
-      using (var context = new QuincalcContext())
+      using (var todservice = new TodoService())
       {
-        context.Todos.Remove(current);
-        context.SaveChangesAsync();
+        var success = await todservice.Destroy(current);
+        if (!success)
+        {
+          // TODO: add unsuccessful code
+          return;
+        }
       }
+      LoadTodos(PageNum);
       SaveBtn.IsEnabled = true;
-      LoadTodos();
     }
 
     private void MDView_ViewStateChanged(object sender, MasterDetailsViewState e)
@@ -130,22 +110,22 @@ namespace QuinCalc.Views
       switch (e)
       {
         case MasterDetailsViewState.Master:
-          AddMobileBtn.Visibility = Windows.UI.Xaml.Visibility.Visible;
+          AddMobileBtn.Visibility = Visibility.Visible;
           break;
         default:
-          AddMobileBtn.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+          AddMobileBtn.Visibility = Visibility.Collapsed;
           break;
       }
     }
 
-    private void NextBtn_Click(object sender, RoutedEventArgs e)
-    {
-
-    }
-
     private void BackBtn_Click(object sender, RoutedEventArgs e)
     {
+      LoadTodos(PageNum - 1);
+    }
 
+    private void NextBtn_Click(object sender, RoutedEventArgs e)
+    {
+      LoadTodos(PageNum + 1);
     }
   }
 }

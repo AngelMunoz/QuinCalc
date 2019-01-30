@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using QuinCalc.Models;
+using QuinCalc.Services;
 using QuinCalc.ViewModels;
 using Windows.UI.Xaml.Controls;
 
@@ -33,11 +34,11 @@ namespace QuinCalc.Views
     {
       using (var context = new QuincalcContext())
       {
-        int dayToCheck = GetDayToCheck();
+        int dayToCheck = DateService.GetDayToCheck();
         decimal totalAmount = await GetTotalAmount(context, dayToCheck);
         UpNextBiweek = new ExpenseVm
         {
-          DueDate = GetNextQuin(dayToCheck),
+          DueDate = DateService.GetNextQuin(dayToCheck),
           Amount = totalAmount
         };
         UpNextTodo = await GetUpnext(context);
@@ -53,7 +54,9 @@ namespace QuinCalc.Views
     /// <returns></returns>
     private async Task<ExpenseVm> GetUpNextExpense(QuincalcContext context)
     {
-      var expense = await context.Expenses.OrderBy(e => Math.Abs((e.DueDate - DateTime.Now).Ticks)).FirstOrDefaultAsync();
+      var expense = await context.Expenses
+        .OrderBy(e => Math.Abs((e.DueDate - DateTimeOffset.Now).Ticks))
+        .FirstOrDefaultAsync();
       return new ExpenseVm(expense);
     }
 
@@ -66,20 +69,11 @@ namespace QuinCalc.Views
     {
       var todo = await context.Todos
         .Where(t => !t.IsDone)
-        .OrderBy(e => Math.Abs((e.DueDate - DateTime.Now).Ticks))
+        .OrderBy(e => Math.Abs((e.DueDate - DateTimeOffset.Now).Ticks))
         .FirstOrDefaultAsync();
       return new TodoVm(todo);
     }
 
-    /// <summary>
-    /// Get the closest day to pay the expenses (either day 15 or last day of the month)
-    /// </summary>
-    /// <param name="dayToCheck"></param>
-    /// <returns></returns>
-    private static DateTime GetNextQuin(int dayToCheck)
-    {
-      return new DateTime(DateTime.Now.Year, DateTime.Now.Month, dayToCheck);
-    }
 
     /// <summary>
     /// Get the Total Amount to pay on the NextQuin (day 15 or last day of the current month)
@@ -90,17 +84,11 @@ namespace QuinCalc.Views
     private static async Task<decimal> GetTotalAmount(QuincalcContext context, int dayToCheck)
     {
       return await context.Expenses
-        .Where(e => (e.DueDate.Day >= DateTime.Now.Day) && (e.DueDate.Day <= GetNextQuin(dayToCheck).Day))
+        .Where(e =>
+          (e.DueDate.Day >= DateTimeOffset.Now.Day) &&
+          (e.DueDate.Day <= DateService.GetNextQuin(dayToCheck).Day)
+         )
         .SumAsync(e => e.Amount);
-    }
-
-    /// <summary>
-    /// Gets the Next Day to Check (either 15 or last day of the month)
-    /// </summary>
-    /// <returns></returns>
-    private static int GetDayToCheck()
-    {
-      return DateTime.Now.Day < 15 ? 15 : DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month);
     }
   }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using Microsoft.Toolkit.Uwp.UI.Controls;
 using QuinCalc.Models;
 using QuinCalc.Services;
@@ -16,14 +15,12 @@ namespace QuinCalc.Views
   /// </summary>
   public sealed partial class Expenses : Page
   {
-    private ExpenseService ExpenseService;
     public ObservableCollection<ExpenseVm> ExpensesList = new ObservableCollection<ExpenseVm>();
     public int PageNum { get; private set; } = 1;
     public int TotalExpenseCount { get; private set; } = 0;
     public Expenses()
     {
       InitializeComponent();
-      ExpenseService = new ExpenseService();
       LoadExpenses();
       CheckViewState();
     }
@@ -41,15 +38,18 @@ namespace QuinCalc.Views
       }
     }
 
-    private async void LoadExpenses(int page = 1, int limit = 10)
+    private async void LoadExpenses(int page = 1, int limit = 5)
     {
       var skip = (page - 1) * limit;
-      var (count, expenses) = await ExpenseService.Find(skip, limit);
-      TotalExpenseCount = count;
-      ExpensesList.Clear();
-      foreach (var expense in expenses)
+      using (var exservice = new ExpenseService())
       {
-        ExpensesList.Add(new ExpenseVm(expense));
+        var (count, expenses) = await exservice.Find(skip, limit);
+        TotalExpenseCount = count;
+        ExpensesList.Clear();
+        foreach (var expense in expenses)
+        {
+          ExpensesList.Add(new ExpenseVm(expense));
+        }
       }
       NextBtn.IsEnabled = skip <= TotalExpenseCount;
       BackBtn.IsEnabled = skip >= limit;
@@ -58,11 +58,14 @@ namespace QuinCalc.Views
 
     private async void CreateExpenseBtn_Click(object sender, RoutedEventArgs e)
     {
-      var success = await ExpenseService.Create(new Expense() { DueDate = DateTime.Now });
-      if (!success)
+      using (var exservice = new ExpenseService())
       {
-        // TODO: add unsuccessful code
-        return;
+        var success = await exservice.Create(new Expense() { DueDate = DateService.GetNextQuin() });
+        if (!success)
+        {
+          // TODO: add unsuccessful code
+          return;
+        }
       }
       LoadExpenses();
     }
@@ -71,11 +74,14 @@ namespace QuinCalc.Views
     {
       SaveBtn.IsEnabled = false;
       ExpenseVm current = MDView.SelectedItem as ExpenseVm;
-      var success = await ExpenseService.Update(current);
-      if (!success)
+      using (var exservice = new ExpenseService())
       {
-        // TODO: add unsuccessful code
-        return;
+        var success = await exservice.Update(current);
+        if (!success)
+        {
+          // TODO: add unsuccessful code
+          return;
+        }
       }
       LoadExpenses(PageNum);
       SaveBtn.IsEnabled = true;
@@ -85,11 +91,14 @@ namespace QuinCalc.Views
     {
       SaveBtn.IsEnabled = false;
       ExpenseVm current = MDView.SelectedItem as ExpenseVm;
-      var success = await ExpenseService.Destroy(current);
-      if (!success)
+      using (var exservice = new ExpenseService())
       {
-        // TODO: add unsuccessful code
-        return;
+        var success = await exservice.Destroy(current);
+        if (!success)
+        {
+          // TODO: add unsuccessful code
+          return;
+        }
       }
       SaveBtn.IsEnabled = true;
       LoadExpenses(PageNum);
