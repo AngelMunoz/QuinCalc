@@ -8,7 +8,7 @@ using QuinCalc.Models;
 
 namespace QuinCalc.Services
 {
-  public class ExpenseService : IBasicService<Expense>
+  public class ExpenseService : IBasicService<Expense>, IDisposable
   {
     private QuincalcContext _context;
 
@@ -51,7 +51,7 @@ namespace QuinCalc.Services
     {
       var count = _context.Expenses.Count();
       var expenses = await _context.Expenses
-                .OrderBy(e => e.DueDate)
+                .OrderBy(e => Math.Abs((e.DueDate - DateTimeOffset.Now).Ticks))
                 .Skip(skip)
                 .Take(limit)
                 .ToListAsync();
@@ -63,7 +63,7 @@ namespace QuinCalc.Services
     {
       try
       {
-        await _context.Expenses.AddAsync(item);
+        _context.Expenses.Update(item);
         await _context.SaveChangesAsync();
         return true;
       }
@@ -72,6 +72,19 @@ namespace QuinCalc.Services
         Debug.WriteLine(e.StackTrace, "Service:Error:Update");
         return false;
       }
+    }
+
+    public async Task<Expense> FindClosest()
+    {
+      var expense = await _context.Expenses
+        .OrderBy(e => Math.Abs((e.DueDate - DateTimeOffset.Now).Ticks))
+        .FirstOrDefaultAsync();
+      return expense;
+    }
+
+    public void Dispose()
+    {
+      _context.Dispose();
     }
   }
 }
