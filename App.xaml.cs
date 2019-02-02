@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
-using QuinCalc.Models;
+using QuinCalcData.Models;
 using QuinCalc.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
