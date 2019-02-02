@@ -74,6 +74,15 @@ namespace QuinCalc.Services
       }
     }
 
+    public async Task<Todo> FindClosest()
+    {
+      var todo = await _context.Todos
+       .Where(t => !t.IsDone)
+       .OrderBy(e => Math.Abs((e.DueDate - DateTimeOffset.Now).Ticks))
+       .FirstOrDefaultAsync();
+      return todo;
+    }
+
     public void Dispose()
     {
       _context.Dispose();
