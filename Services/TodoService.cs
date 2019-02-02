@@ -51,12 +51,24 @@ namespace QuinCalc.Services
     {
       var count = _context.Todos.Count();
       var todos = await _context.Todos
-                .OrderBy(e => Math.Abs((e.DueDate - DateTimeOffset.Now).Ticks))
-                .Skip(skip)
-                .Take(limit)
-                .ToListAsync();
+        .OrderBy(e => Math.Abs((e.DueDate - DateTimeOffset.Now).Ticks))
+        .Skip(skip)
+        .Take(limit)
+        .ToListAsync();
       return (count, todos);
 
+    }
+
+    public async Task<(int, List<Todo>)> FindByIsDone(bool isDone, int skip, int limit)
+    {
+      var count = _context.Todos.Where(t => t.IsDone == isDone).Count();
+      var todos = await _context.Todos
+        .Where(t => t.IsDone == isDone)
+        .OrderBy(e => Math.Abs((e.DueDate - DateTimeOffset.Now).Ticks))
+        .Skip(skip)
+        .Take(limit)
+        .ToListAsync();
+      return (count, todos);
     }
 
     public async Task<bool> Update(Todo item)
