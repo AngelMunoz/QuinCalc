@@ -34,11 +34,14 @@
                 <StackPanel>
                     <StackPanel HorizontalAlignment="Left" Height="auto">
                         <TextBlock Text="Name"/>
-                        <TextBox PlaceholderText="Todo's Name" Text="{Binding Name, Mode=TwoWay}"/>
+                        <TextBox PlaceholderText="Todo's Name" Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         <TextBlock Text="Description"/>
-                        <TextBox PlaceholderText="Todo's Description" Text="{Binding Description, Mode=TwoWay}"/>
+                        <TextBox PlaceholderText="Todo's Description" 
+                                 Text="{Binding Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         <TextBlock Text="Due To"/>
-                        <CalendarDatePicker Name="DatePickerCtrl" Date="{Binding DueDate, Mode=TwoWay}" DateFormat="{}{month.full} {day.integer}, {year.full}"/>
+                        <CalendarDatePicker Name="DatePickerCtrl"
+                                            Date="{Binding DueDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                            DateFormat="{}{month.full} {day.integer}, {year.full}"/>
                         <TextBlock Text="Is Done"/>
                         <CheckBox IsChecked="{Binding IsDone, Mode=TwoWay}"/>
                     </StackPanel>
