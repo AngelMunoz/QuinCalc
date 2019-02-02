@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace QuinCalc.Models
+namespace QuinCalcData.Models
 {
   public class Todo
   {
