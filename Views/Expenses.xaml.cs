@@ -1,8 +1,9 @@
-﻿using System.Collections.ObjectModel;
-using Microsoft.Toolkit.Uwp.UI.Controls;
-using QuinCalcData.Models;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using QuinCalc.Enums;
 using QuinCalc.Services;
 using QuinCalc.ViewModels;
+using QuinCalcData.Models;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -16,44 +17,59 @@ namespace QuinCalc.Views
   public sealed partial class Expenses : Page
   {
     public ObservableCollection<ExpenseVm> ExpensesList = new ObservableCollection<ExpenseVm>();
-    public int PageNum { get; private set; } = 1;
-    public int TotalExpenseCount { get; private set; } = 0;
+    public LoadExpenseType CurrentLoadType { get; set; } = LoadExpenseType.All;
+    public ExpensePageVm ExpensePage { get; set; }
+
     public Expenses()
     {
       InitializeComponent();
-      LoadExpenses();
-      CheckViewState();
-    }
-
-    private void CheckViewState()
-    {
-      switch (MDView.ViewState)
+      ExpensePage = new ExpensePageVm
       {
-        case MasterDetailsViewState.Master:
-          AddMobileBtn.Visibility = Visibility.Visible;
-          break;
-        default:
-          AddMobileBtn.Visibility = Visibility.Collapsed;
-          break;
-      }
+        PageNum = 1,
+        ShowBackBtn = false,
+        ShowNextBtn = false,
+        TotalAmount = 0,
+        TotalCount = 0
+      };
+      Loaded += Expenses_Loaded;
+      ExpenseDataGrid.OnExpenseUpdate += ExpenseDataGrid_OnExpenseUpdate;
     }
 
-    private async void LoadExpenses(int page = 1, int limit = 5)
+    private void Expenses_Loaded(object sender, RoutedEventArgs e)
+    {
+      LoadExpenses();
+      LoadTotalAmount();
+    }
+
+    private async void LoadExpenses(int page = 1, int limit = 20, LoadExpenseType loadType = LoadExpenseType.All)
     {
       var skip = (page - 1) * limit;
       using (var exservice = new ExpenseService())
       {
-        var (count, expenses) = await exservice.Find(skip, limit);
-        TotalExpenseCount = count;
+        int count = 0;
+        List<Expense> expenses = null;
+        switch (loadType)
+        {
+          case LoadExpenseType.All:
+            (count, expenses) = await exservice.Find(skip, limit);
+            break;
+          case LoadExpenseType.Done:
+            (count, expenses) = await exservice.FindByIsDone(true, skip, limit);
+            break;
+          case LoadExpenseType.NotDone:
+            (count, expenses) = await exservice.FindByIsDone(false, skip, limit);
+            break;
+        }
+        ExpensePage.TotalCount = count;
+        ExpensePage.ShowNextBtn = skip <= ExpensePage.TotalCount;
+        ExpensePage.ShowBackBtn = skip >= limit;
         ExpensesList.Clear();
         foreach (var expense in expenses)
         {
           ExpensesList.Add(new ExpenseVm(expense));
         }
       }
-      NextBtn.IsEnabled = skip <= TotalExpenseCount;
-      BackBtn.IsEnabled = skip >= limit;
-      PageNum = page;
+      ExpensePage.PageNum = page;
     }
 
     private async void CreateExpenseBtn_Click(object sender, RoutedEventArgs e)
@@ -68,63 +84,66 @@ namespace QuinCalc.Views
         }
       }
       LoadExpenses();
+      LoadTotalAmount();
     }
 
-    private async void SaveBtn_Click(object sender, RoutedEventArgs e)
+    private async void ExpenseDataGrid_OnExpenseUpdate(object sender, (ExpenseVm, ExpenseUpdateType) e)
     {
-      SaveBtn.IsEnabled = false;
-      ExpenseVm current = MDView.SelectedItem as ExpenseVm;
+      var (expense, updateType) = e;
       using (var exservice = new ExpenseService())
       {
-        var success = await exservice.Update(current);
-        if (!success)
+        switch (updateType)
         {
-          // TODO: add unsuccessful code
-          return;
+          case ExpenseUpdateType.Delete:
+            await exservice.Destroy(expense);
+            break;
+          case ExpenseUpdateType.MarkAsDone:
+            expense.IsDone = true;
+            await exservice.Update(expense);
+            break;
+          case ExpenseUpdateType.MarkAsNotDone:
+            expense.IsDone = false;
+            await exservice.Update(expense);
+            break;
+          case ExpenseUpdateType.Save:
+            await exservice.Update(expense);
+            break;
         }
       }
-      LoadExpenses(PageNum);
-      SaveBtn.IsEnabled = true;
+      LoadExpenses(ExpensePage.PageNum, loadType: CurrentLoadType);
+      LoadTotalAmount();
     }
 
-    private async void DeleteBtn_Click(object sender, RoutedEventArgs e)
+    private async void LoadTotalAmount()
     {
-      SaveBtn.IsEnabled = false;
-      ExpenseVm current = MDView.SelectedItem as ExpenseVm;
       using (var exservice = new ExpenseService())
       {
-        var success = await exservice.Destroy(current);
-        if (!success)
-        {
-          // TODO: add unsuccessful code
-          return;
-        }
-      }
-      SaveBtn.IsEnabled = true;
-      LoadExpenses(PageNum);
-    }
-
-    private void MDView_ViewStateChanged(object sender, MasterDetailsViewState e)
-    {
-      switch (e)
-      {
-        case MasterDetailsViewState.Master:
-          AddMobileBtn.Visibility = Visibility.Visible;
-          break;
-        default:
-          AddMobileBtn.Visibility = Visibility.Collapsed;
-          break;
+        ExpensePage.TotalAmount = await exservice.GetTotalAmount(CurrentLoadType);
       }
     }
 
     private void BackBtn_Click(object sender, RoutedEventArgs e)
     {
-      LoadExpenses(PageNum - 1);
+      LoadExpenses(ExpensePage.PageNum - 1, loadType: CurrentLoadType);
     }
 
     private void NextBtn_Click(object sender, RoutedEventArgs e)
     {
-      LoadExpenses(PageNum + 1);
+      LoadExpenses(ExpensePage.PageNum + 1, loadType: CurrentLoadType);
+    }
+
+    private void HideDoneCheck_Checked(object sender, RoutedEventArgs e)
+    {
+      CurrentLoadType = LoadExpenseType.NotDone;
+      LoadExpenses(ExpensePage.PageNum, loadType: CurrentLoadType);
+      LoadTotalAmount();
+    }
+
+    private void HideDoneCheck_Unchecked(object sender, RoutedEventArgs e)
+    {
+      CurrentLoadType = LoadExpenseType.All;
+      LoadExpenses(ExpensePage.PageNum, loadType: CurrentLoadType);
+      LoadTotalAmount();
     }
   }
 }
