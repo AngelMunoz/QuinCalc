@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using QuinCalc.Services;
 using Windows.ApplicationModel.Background;
-using Windows.System;
 using Windows.UI.Notifications;
-using Windows.UI.Xaml;
 
 namespace QuinCalc.Tasks
 {
@@ -42,9 +39,11 @@ namespace QuinCalc.Tasks
 
     private async void Task_Completed(BackgroundTaskRegistration sender, BackgroundTaskCompletedEventArgs args)
     {
+      Debug.WriteLine($"{sender.TaskGroup}, {sender.Name}, {args.InstanceId}", "Quincalc:Tasks");
       using (var exser = new ExpenseService())
       {
         var expense = await exser.FindClosest();
+        if (expense == null) { return; }
         var diff = expense.DueDate.DateTime - DateTimeOffset.Now;
         if (diff.Days < 2 && diff.Days > -2)
         {
@@ -54,7 +53,6 @@ namespace QuinCalc.Tasks
           ToastNotificationManager.CreateToastNotifier().Show(toast);
         }
       }
-      Debug.WriteLine($"{sender.TaskGroup}, {sender.Name}, {args.InstanceId}", "Quincalc:Tasks");
     }
 
     private void Toast_Activated(ToastNotification sender, object args)
