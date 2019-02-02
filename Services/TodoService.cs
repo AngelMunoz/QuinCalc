@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using QuinCalc.Models;
+using QuinCalcData.Models;
 
 namespace QuinCalc.Services
 {

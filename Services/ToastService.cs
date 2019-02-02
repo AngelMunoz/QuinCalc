@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 using Microsoft.Toolkit.Uwp.Notifications;
-using QuinCalc.Models;
+using QuinCalcData.Models;
 
 namespace QuinCalc.Services
 {

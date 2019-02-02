@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using Microsoft.Toolkit.Uwp.UI.Controls;
-using QuinCalc.Models;
+using QuinCalcData.Models;
 using QuinCalc.Services;
 using QuinCalc.ViewModels;
 using Windows.UI.Xaml;

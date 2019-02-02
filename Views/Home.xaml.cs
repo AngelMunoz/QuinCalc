@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using QuinCalc.Models;
+using QuinCalcData.Models;
 using QuinCalc.Services;
 using QuinCalc.ViewModels;
 using Windows.UI.Xaml.Controls;

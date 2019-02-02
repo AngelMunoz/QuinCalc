@@ -1,6 +1,6 @@
 ﻿using System;
 using QuinCalc.Helpers;
-using QuinCalc.Models;
+using QuinCalcData.Models;
 
 namespace QuinCalc.ViewModels
 {
