@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using QuinCalc.Models;
+using QuinCalc.Helpers;
+using QuinCalcData.Models;
 
 namespace QuinCalc.ViewModels
 {
-  public class ExpenseViewModel : NotificationBase<Expense>
+  public class ExpenseVm : NotificationBase<Expense>
   {
-    public ExpenseViewModel(Expense expense = null) : base(expense) { }
+    public ExpenseVm(Expense expense = null) : base(expense)
+    {
+    }
 
     public string Name
     {
@@ -23,7 +22,13 @@ namespace QuinCalc.ViewModels
       set { SetProperty(This.Amount, value, () => This.Amount = value); }
     }
 
-    public DateTime DueDate
+    public bool IsDone
+    {
+      get { return This.IsDone; }
+      set { SetProperty(This.IsDone, value, () => This.IsDone = value); }
+    }
+
+    public DateTimeOffset DueDate
     {
       get { return This.DueDate; }
       set { SetProperty(This.DueDate, value, () => This.DueDate = value); }

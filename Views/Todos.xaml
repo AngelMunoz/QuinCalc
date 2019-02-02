@@ -8,7 +8,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="{ThemeResource SystemControlAcrylicWindowBrush}">
     <Page.Resources>
         <converters:DateTimeConverter x:Key="DateTimeConverter" />
     </Page.Resources>
@@ -34,11 +34,14 @@
                 <StackPanel>
                     <StackPanel HorizontalAlignment="Left" Height="auto">
                         <TextBlock Text="Name"/>
-                        <TextBox PlaceholderText="Todo's Name" Text="{Binding Name, Mode=TwoWay}"/>
+                        <TextBox PlaceholderText="Todo's Name" Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         <TextBlock Text="Description"/>
-                        <TextBox PlaceholderText="Todo's Description" Text="{Binding Description, Mode=TwoWay}"/>
+                        <TextBox PlaceholderText="Todo's Description" 
+                                 Text="{Binding Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         <TextBlock Text="Due To"/>
-                        <DatePicker Name="DatePickerCtrl" Date="{Binding DueDate,Converter={StaticResource DateTimeConverter}, Mode=TwoWay}"/>
+                        <CalendarDatePicker Name="DatePickerCtrl"
+                                            Date="{Binding DueDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                            DateFormat="{}{month.full} {day.integer}, {year.full}"/>
                         <TextBlock Text="Is Done"/>
                         <CheckBox IsChecked="{Binding IsDone, Mode=TwoWay}"/>
                     </StackPanel>
@@ -60,22 +63,22 @@
                                    FontSize="24" 
                                    Margin="0,12"/>
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <TextBlock Text="Or Create A Fresh One" Margin="5" FontSize="24"/>
-                    <Button x:Name="CreateTodoBtn" Height="40" Width="40" HorizontalAlignment="Center" Click="CreateTodoBtn_Click">
-                        <SymbolIcon Symbol="Add" />
-                    </Button>
-                </StackPanel>
+                        <TextBlock Text="Or Create A Fresh One" Margin="5" FontSize="24"/>
+                        <Button x:Name="CreateTodoBtn" Height="40" Width="40" HorizontalAlignment="Center" Click="CreateTodoBtn_Click">
+                            <SymbolIcon Symbol="Add" />
+                        </Button>
+                    </StackPanel>
                 </StackPanel>
             </DataTemplate>
         </controls:MasterDetailsView.NoSelectionContentTemplate>
         <controls:MasterDetailsView.MasterCommandBar>
             <CommandBar>
                 <AppBarButton x:Name="AddMobileBtn" Icon="Add" Label="Add New" Visibility="Collapsed" Click="CreateTodoBtn_Click" />
-                <AppBarButton x:Name="NextBtn" Icon="Back" Label="Back" Click="NextBtn_Click"/>
-                <AppBarButton x:Name="BackBtn" Icon="Forward" Label="Forward" Click="BackBtn_Click"/>
+                <AppBarButton x:Name="BackBtn" Icon="Back" Label="Back" Click="BackBtn_Click"/>
+                <AppBarButton x:Name="NextBtn" Icon="Forward" Label="Forward" Click="NextBtn_Click"/>
                 <CommandBar.Content>
                     <TextBlock Margin="12,14">
-                                <Run Text="{x:Bind TodosList.Count}" />
+                                <Run Text="{x:Bind TotalTodoCount}" />
                                 <Run Text="To-do's" />
                     </TextBlock>
                 </CommandBar.Content>

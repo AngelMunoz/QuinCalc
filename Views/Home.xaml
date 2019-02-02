@@ -4,40 +4,54 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:QuinCalc.Views"
     xmlns:converters="using:QuinCalc.Converters"
+    xmlns:mutc="using:Microsoft.Toolkit.Uwp.UI.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="{ThemeResource SystemControlAcrylicWindowBrush}">
     <Page.Resources>
         <converters:DateTimeConverter x:Key="DateTimeConverter" />
+        <converters:CurrencyConverter x:Key="CurrencyConverter" />
+        <mutc:BoolToObjectConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed"/>
     </Page.Resources>
-    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-
-        <StackPanel x:Name="UpNextTodoPanel" Grid.Column="0" Grid.Row="0" Margin="10">
-            <TextBlock>Up Next To-do</TextBlock>
-            <TextBlock Text="{x:Bind UpNext.Name}"/>
-            <TextBlock Text="{x:Bind UpNext.DueDate, Converter={StaticResource DateTimeConverter}}"/>
-        </StackPanel>
-        <StackPanel x:Name="UpNextExpensePanel" Grid.Column="1" Grid.Row="0" Margin="10">
-            <TextBlock>Up Next Expense</TextBlock>
-            <TextBlock Text="{x:Bind UpNextExpense.Name}"/>
-            <TextBlock Text="{x:Bind UpNextExpense.DueDate, Converter={StaticResource DateTimeConverter}}"/>
-        </StackPanel>
-        <StackPanel x:Name="ClosestExpensePanel" Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="10">
-            <TextBlock Padding="0, 0, 5, 0">Closest Biweekly Expense:</TextBlock>
-            <TextBlock Text="{x:Bind NextQuin.Name}" />
-            <TextBlock Text="{x:Bind NextQuin.Amount}" />
-        </StackPanel>
-        <StackPanel Grid.ColumnSpan="2" Grid.RowSpan="2" x:Name="NoExpensesPanel" Visibility="Collapsed">
-            <TextBlock>No Expenses For this period :)</TextBlock>
-        </StackPanel>
-    </Grid>
+    <Hub x:Name="HomeHub">
+        <HubSection Header="Summary">
+            <HubSection.Background>
+                <AcrylicBrush TintColor="#CC1B4242"/>
+            </HubSection.Background>
+            <DataTemplate>
+                <StackPanel>
+                    <TextBlock>Total For the Current Biweek:</TextBlock>
+                    <TextBlock Text="{Binding UpNextBiweek.Amount, Converter={StaticResource CurrencyConverter}}" />
+                    <TextBlock>Total For the Current Month:</TextBlock>
+                    <TextBlock Text="{Binding UpNextMonthly.Amount, Converter={StaticResource CurrencyConverter}}" />
+                </StackPanel>
+            </DataTemplate>
+        </HubSection>
+        <HubSection Header="Up next todo" MinWidth="420">
+            <HubSection.Background>
+                <AcrylicBrush TintColor="#CC29495F" Opacity="0.5"/>
+            </HubSection.Background>
+            <DataTemplate>
+                <StackPanel Visibility="{Binding ShowTodo, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <TextBlock>Up Next To-do</TextBlock>
+                    <TextBlock Text="{Binding UpNextTodo.Name}"/>
+                    <TextBlock Text="{Binding UpNextTodo.DueDate, Converter={StaticResource DateTimeConverter}}"/>
+                </StackPanel>
+            </DataTemplate>
+        </HubSection>
+        <HubSection Header="Up next expense" MinWidth="420">
+            <HubSection.Background>
+                <AcrylicBrush TintColor="#CC1D1205" Opacity="0.5"/>
+            </HubSection.Background>
+            <DataTemplate>
+                <StackPanel Visibility="{Binding ShowExpense, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <TextBlock>Up Next Expense</TextBlock>
+                    <TextBlock Text="{Binding UpNextExpense.Name}"/>
+                    <TextBlock Text="{Binding UpNextExpense.DueDate, Converter={StaticResource DateTimeConverter}}"/>
+                    <TextBlock Text="{Binding UpNextExpense.Amount, Converter={StaticResource CurrencyConverter}}"/>
+                </StackPanel>
+            </DataTemplate>
+        </HubSection>
+    </Hub>
 </Page>

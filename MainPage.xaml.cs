@@ -1,16 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
-using QuinCalc.Models;
-using QuinCalc.ViewModels;
-using QuinCalc.Views;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using QuinCalc.Views;
+using Windows.ApplicationModel.Activation;
 using Windows.System;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
+using muxc = Microsoft.UI.Xaml.Controls;
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
 namespace QuinCalc
@@ -24,6 +22,7 @@ namespace QuinCalc
     public MainPage()
     {
       InitializeComponent();
+      ContentFrame.Navigated += On_Navigated;
     }
 
     private readonly List<(string Tag, Type Page)> _pages = new List<(string Tag, Type Page)>
@@ -33,15 +32,17 @@ namespace QuinCalc
       ("Todos", typeof(Todos)),
     };
 
-    private void NavigationView_Loaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+    private void Nav_Loaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
     {
-      ContentFrame.Navigated += On_Navigated;
-      // NavView doesn't load any page by default, so load home page.
-      Nav.SelectedItem = Nav.MenuItems[0];
-      // If navigation occurs on SelectionChanged, this isn't needed.
-      // Because we use ItemInvoked to navigate, we need to call Navigate
-      // here to load the home page.
-      NavView_Navigate("Home", new EntranceNavigationTransitionInfo());
+      if(Nav.SelectedItem == null)
+      {
+        // NavView doesn't load any page by default, so load home page.
+        Nav.SelectedItem = Nav.MenuItems[0];
+        // If navigation occurs on SelectionChanged, this isn't needed.
+        // Because we use ItemInvoked to navigate, we need to call Navigate
+        // here to load the home page.
+        NavView_Navigate("Home", new EntranceNavigationTransitionInfo());
+      }
 
       // Add keyboard accelerators for backwards navigation.
       var goBack = new KeyboardAccelerator { Key = VirtualKey.GoBack };
@@ -59,16 +60,16 @@ namespace QuinCalc
 
     }
 
-    private void NavigationView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
+    private void Nav_ItemInvoked(muxc.NavigationView sender, muxc.NavigationViewItemInvokedEventArgs args)
     {
       if (args.IsSettingsInvoked == true)
       {
-        NavView_Navigate("settings", new SlideNavigationTransitionInfo());
+        NavView_Navigate("settings", new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromBottom });
       }
       else if (args.InvokedItem != null)
       {
         var navItemTag = args.InvokedItem;
-        NavView_Navigate(navItemTag as string, new SlideNavigationTransitionInfo());
+        NavView_Navigate(navItemTag as string, new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight });
       }
     }
 
@@ -86,16 +87,16 @@ namespace QuinCalc
 
       // Don't go back if the nav pane is overlayed.
       if (Nav.IsPaneOpen &&
-          (Nav.DisplayMode == NavigationViewDisplayMode.Compact ||
-           Nav.DisplayMode == NavigationViewDisplayMode.Minimal))
+       (Nav.DisplayMode == muxc.NavigationViewDisplayMode.Compact ||
+        Nav.DisplayMode == muxc.NavigationViewDisplayMode.Minimal))
         return false;
+
 
       ContentFrame.GoBack();
       return true;
     }
 
-    private void NavView_BackRequested(NavigationView sender,
-                                   NavigationViewBackRequestedEventArgs args)
+    private void Nav_BackRequested(muxc.NavigationView sender, muxc.NavigationViewBackRequestedEventArgs args)
     {
       On_BackRequested();
     }
@@ -118,7 +119,7 @@ namespace QuinCalc
       var preNavPageType = ContentFrame.CurrentSourcePageType;
 
       // Only navigate if the selected page isn't currently loaded.
-      if (!(_page is null) && !Type.Equals(preNavPageType, _page))
+      if (!(_page is null) && !Equals(preNavPageType, _page))
       {
         ContentFrame.Navigate(_page, null, transitionInfo);
       }
@@ -132,7 +133,7 @@ namespace QuinCalc
       if (ContentFrame.SourcePageType == typeof(Settings))
       {
         // SettingsItem is not part of NavView.MenuItems, and doesn't have a Tag.
-        Nav.SelectedItem = (NavigationViewItem)Nav.SettingsItem;
+        Nav.SelectedItem = (muxc.NavigationViewItem)Nav.SettingsItem;
         Nav.Header = "Settings";
       }
       else if (ContentFrame.SourcePageType != null)
@@ -140,11 +141,22 @@ namespace QuinCalc
         var item = _pages.FirstOrDefault(p => p.Page == e.SourcePageType);
 
         Nav.SelectedItem = Nav.MenuItems
-            .OfType<NavigationViewItem>()
+            .OfType<muxc.NavigationViewItem>()
             .First(n => n.Tag.Equals(item.Tag));
 
         Nav.Header =
-            ((NavigationViewItem)Nav.SelectedItem)?.Content?.ToString();
+            ((muxc.NavigationViewItem)Nav.SelectedItem)?.Content?.ToString();
+      }
+    }
+
+    protected override void OnNavigatedTo(NavigationEventArgs e)
+    {
+      base.OnNavigatedTo(e);
+      var param = e.Parameter as ToastNotificationActivatedEventArgs;
+      var expenses = param?.Argument.Contains("viewExpenses");
+      if(expenses != null && expenses == true)
+      {
+        NavView_Navigate("Expenses", new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight });
       }
     }
   }

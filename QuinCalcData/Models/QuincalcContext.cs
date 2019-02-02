@@ -1,11 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace QuinCalc.Models
+namespace QuinCalcData.Models
 {
   public class QuincalcContext : DbContext
   {
@@ -14,7 +9,7 @@ namespace QuinCalc.Models
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-      optionsBuilder.UseSqlite("Data Source=Quincalc.db");
+      optionsBuilder.UseSqlite($"Data Source=Quincalc.db");
     }
 
   }

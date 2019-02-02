@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using QuinCalc.Models;
+using QuinCalc.Helpers;
+using QuinCalcData.Models;
 
 namespace QuinCalc.ViewModels
 {
-  public class TodoViewModel : NotificationBase<Todo>
+  public class TodoVm : NotificationBase<Todo>
   {
-    public TodoViewModel(Todo todo = null) : base(todo) { }
+    public TodoVm(Todo todo = null) : base(todo)
+    {
+    }
 
     public string Name
     {
@@ -29,7 +28,7 @@ namespace QuinCalc.ViewModels
       set { SetProperty(This.Description, value, () => This.Description = value); }
     }
 
-    public DateTime DueDate
+    public DateTimeOffset DueDate
     {
       get { return This.DueDate; }
       set { SetProperty(This.DueDate, value, () => This.DueDate = value); }

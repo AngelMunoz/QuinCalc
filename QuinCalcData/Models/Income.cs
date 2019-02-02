@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace QuinCalc.Models
+namespace QuinCalcData.Models
 {
-  public class Expense
+  public class Income
   {
     public long Id { get; set; }
     public string Name { get; set; }
     public decimal Amount { get; set; }
-    public DateTime DueDate { get; set; }
+    public bool HasArrived { get; set; }
+    public DateTimeOffset DueTo { get; set; }
+
+    public Budget Budget { get; set; }
   }
 }
