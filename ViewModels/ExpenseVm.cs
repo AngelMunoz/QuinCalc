@@ -1,6 +1,6 @@
 ﻿using System;
 using QuinCalc.Helpers;
-using QuinCalc.Models;
+using QuinCalcData.Models;
 
 namespace QuinCalc.ViewModels
 {
@@ -20,6 +20,12 @@ namespace QuinCalc.ViewModels
     {
       get { return This.Amount; }
       set { SetProperty(This.Amount, value, () => This.Amount = value); }
+    }
+
+    public bool IsDone
+    {
+      get { return This.IsDone; }
+      set { SetProperty(This.IsDone, value, () => This.IsDone = value); }
     }
 
     public DateTimeOffset DueDate
