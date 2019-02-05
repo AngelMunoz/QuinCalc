@@ -85,6 +85,7 @@ namespace QuinCalc.Views
       }
       LoadExpenses();
       LoadTotalAmount();
+      ExpenseDataGrid.IsPaneOpen = true;
     }
 
     private async void ExpenseDataGrid_OnExpenseUpdate(object sender, (ExpenseVm, ExpenseUpdateType) e)

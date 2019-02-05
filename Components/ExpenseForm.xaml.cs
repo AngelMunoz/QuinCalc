@@ -16,7 +16,7 @@ namespace QuinCalc.Components
     {
       InitializeComponent();
     }
-
+    
     private void UpdateExpense_Click(object sender, RoutedEventArgs e)
     {
       var btn = sender as AppBarButton;

@@ -34,12 +34,12 @@
         <StackPanel>
             <TextBlock Text="Name" />
             <TextBox PlaceholderText="Expense's Name"
-                     Text="{Binding Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                     Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             <TextBlock Text="Amount" />
             <TextBox PlaceholderText="Expense Amount" 
-                     Text="{Binding Amount, Converter={StaticResource CurrencyConverter}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+                     Text="{Binding Amount, Converter={StaticResource CurrencyConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             <TextBlock Text="Payment Date"/>
-            <CalendarDatePicker Name="DatePickerCtrl" Date="{Binding DueDate, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" DateFormat="{}{month.full} {day.integer}, {year.full}"/>
+            <CalendarDatePicker Name="DatePickerCtrl" Date="{Binding DueDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" DateFormat="{}{month.full} {day.integer}, {year.full}"/>
             <CommandBar Margin="0, 30" Background="{StaticResource SystemControlAcrylicWindowBrush}">
                 <AppBarButton 
                     Icon="Save"
