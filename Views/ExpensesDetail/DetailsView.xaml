@@ -4,9 +4,35 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:cm="using:Caliburn.Micro"
+  xmlns:converters="using:QuinCalc.Converters"
+  xmlns:enums="using:QuinCalc.Enums"
+  xmlns:mutc="using:Microsoft.Toolkit.Uwp.UI.Converters"
   mc:Ignorable="d"
   d:DesignHeight="300"
   d:DesignWidth="400" FontFamily="Segoe UI">
+  <UserControl.Resources>
+    <converters:CurrencyConverter x:Key="CurrencyConverter" />
+    <converters:DateTimeConverter x:Key="DateTimeConverter" />
+    <mutc:BoolToObjectConverter x:Key="TrueToVisibleConverter" TrueValue="Collapsed" FalseValue="Visible"/>
+    <mutc:BoolToObjectConverter x:Key="FalseToVisibleConverter" TrueValue="Visible" FalseValue="Collapsed"/>
+    <Style TargetType="TextBlock">
+      <Setter Property="FontSize" Value="20" />
+      <Setter Property="Margin" Value="0,10" />
+    </Style>
+    <Style TargetType="TextBox">
+      <Setter Property="Padding" Value="2.5" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="Height" Value="45" />
+      <Setter Property="FontSize" Value="16" />
+    </Style>
+    <Style TargetType="CalendarDatePicker">
+      <Setter Property="Padding" Value="2.5" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="Height" Value="45" />
+      <Setter Property="FontSize" Value="16" />
+    </Style>
+  </UserControl.Resources>
   <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <ScrollViewer
       Name="ForegroundElement"
@@ -14,19 +40,40 @@
       HorizontalAlignment="Stretch"
       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
       Padding="{StaticResource DetailPageMargin}">
-      <StackPanel>
-        <StackPanel HorizontalAlignment="Left" Height="auto">
-          <TextBlock Text="Name"/>
-          <TextBox PlaceholderText="Todo's Name" Text="{x:Bind ViewModel.Item.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-          <TextBlock Text="Description"/>
-          <TextBox PlaceholderText="Todo's Description" 
-                                 Text="{x:Bind ViewModel.Item.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-          <TextBlock Text="Due To"/>
-          <CalendarDatePicker Name="DatePickerCtrl"
-                                            Date="{x:Bind ViewModel.Item.DueDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                            DateFormat="{}{month.full} {day.integer}, {year.full}"/>
-          <TextBlock Text="Is Done"/>
-          <CheckBox IsChecked="{x:Bind ViewModel.Item.IsDone, Mode=TwoWay}"/>
+      <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="5">
+        <StackPanel>
+          <TextBlock Text="Name" />
+          <TextBox PlaceholderText="Expense's Name"
+                     Text="{x:Bind ViewModel.Item.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+          <TextBlock Text="Amount" />
+          <TextBox PlaceholderText="Expense Amount" 
+                     Text="{x:Bind ViewModel.Item.Amount, Converter={StaticResource CurrencyConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+          <TextBlock Text="Payment Date"/>
+          <CalendarDatePicker Name="DatePickerCtrl" Date="{x:Bind ViewModel.Item.DueDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" DateFormat="{}{month.full} {day.integer}, {year.full}"/>
+          <CommandBar Margin="0, 30" Background="{StaticResource SystemControlAcrylicWindowBrush}">
+            <AppBarButton 
+              Icon="Save"
+              Label="Save"
+              Tag="Save"
+              cm:Message.Attach="SaveExpenseAsync($dataContext, 'Save')" />
+            <AppBarButton 
+              Icon="Delete"
+              Label="Delete"
+              Tag="Delete"
+              cm:Message.Attach="SaveExpenseAsync($dataContext, 'Delete')" />
+            <AppBarButton 
+              Icon="Accept"
+              Label="Done" 
+              Tag="MarkAsDone"
+              cm:Message.Attach="SaveExpenseAsync($dataContext, 'MarkAsDone')"
+              Visibility="{x:Bind ViewModel.Item.IsDone, Mode=TwoWay, Converter={StaticResource TrueToVisibleConverter}}" />
+            <AppBarButton 
+              Icon="Cancel"
+              Label="Not Done"
+              Tag="MarkAsNotDone"
+              cm:Message.Attach="SaveExpenseAsync($dataContext, 'MarkAsNotDone')"
+              Visibility="{x:Bind ViewModel.Item.IsDone, Mode=TwoWay, Converter={StaticResource FalseToVisibleConverter}}" />
+          </CommandBar>
         </StackPanel>
       </StackPanel>
     </ScrollViewer>

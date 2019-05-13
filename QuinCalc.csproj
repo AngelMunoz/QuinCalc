@@ -110,12 +110,6 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\ExpenseDatagrid.xaml.cs">
-      <DependentUpon>ExpenseDatagrid.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Components\ExpenseForm.xaml.cs">
-      <DependentUpon>ExpenseForm.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Converters\DateTimeConverter.cs" />
     <Compile Include="Converters\CurrencyConverter.cs" />
     <Compile Include="Enums\LoadExpenseType.cs" />
@@ -231,14 +225,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Components\ExpenseDatagrid.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\ExpenseForm.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Styles\Page.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -44,12 +44,8 @@
               <CompositeTransform ScaleX="2" ScaleY="2"/>
             </SymbolIcon.RenderTransform>
           </SymbolIcon>
-          <TextBlock Text="{Binding}" FontSize="24" Margin="0,12"/>
           <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock Text="Or Create A Fresh One" Margin="5" FontSize="24"/>
-            <Button x:Name="CreateTodoBtn" Height="40" Width="40" HorizontalAlignment="Center" cm:Message.Attach="[Event Click] = [Action CreateTodoBtn_Click()]" >
-              <SymbolIcon Symbol="Add" />
-            </Button>
+            <TextBlock Text="Select an Expense From The List Or Create A Fresh One" FontSize="24" Margin="0,12"/>
           </StackPanel>
         </StackPanel>
       </Grid>
@@ -90,16 +86,18 @@
         Icon="Filter"
         cm:Message.Attach="[Event Checked] = [Action HideDoneCheck_Checked() ] ; [Event Unchecked] = [Action HideDoneCheck_Unchecked() ]"/>
       <CommandBar.Content>
-        <StackPanel controls:DockPanel.Dock="Bottom" Orientation="Horizontal">
-          <TextBlock Style="{StaticResource PrefixLabel}" Text="Total amount: "/>
-          <TextBlock Style="{StaticResource SuffixLabel}" Text="{x:Bind ViewModel.TotalAmount, Converter={StaticResource CurrencyConverter}, Mode=OneWay}"/>
-          <AppBarSeparator />
-          <TextBlock Style="{StaticResource PrefixLabel}" Text="Total expense items: "/>
-          <TextBlock Style="{StaticResource SuffixLabel}" Text="{x:Bind ViewModel.TotalCount, Mode=OneWay}"/>
-          <AppBarSeparator />
-          <TextBlock Style="{StaticResource PrefixLabel}" Text="Page: "/>
-          <TextBlock Style="{StaticResource SuffixLabel}" Text="{x:Bind ViewModel.PageNum, Mode=OneWay}"/>
-        </StackPanel>
+        <ScrollViewer HorizontalScrollMode="Auto" VerticalScrollMode="Disabled" HorizontalScrollBarVisibility="Auto">
+          <StackPanel Orientation="Horizontal">
+            <TextBlock Style="{StaticResource PrefixLabel}" Text="Amount: "/>
+            <TextBlock Style="{StaticResource SuffixLabel}" Text="{x:Bind ViewModel.TotalAmount, Converter={StaticResource CurrencyConverter}, Mode=OneWay}"/>
+            <AppBarSeparator />
+            <TextBlock Style="{StaticResource PrefixLabel}" Text="Items: "/>
+            <TextBlock Style="{StaticResource SuffixLabel}" Text="{x:Bind ViewModel.TotalCount, Mode=OneWay}"/>
+            <AppBarSeparator />
+            <TextBlock Style="{StaticResource PrefixLabel}" Text="Page: "/>
+            <TextBlock Style="{StaticResource SuffixLabel}" Text="{x:Bind ViewModel.PageNum, Mode=OneWay}"/>
+          </StackPanel>
+        </ScrollViewer>
       </CommandBar.Content>
     </CommandBar>
   </Page.BottomAppBar>

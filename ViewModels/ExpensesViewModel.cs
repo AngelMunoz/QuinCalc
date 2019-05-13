@@ -77,19 +77,12 @@ namespace QuinCalc.ViewModels
       await Task.WhenAll(LoadExpenses(), LoadTotalAmount());
     }
 
-    private async Task LoadTotalAmount()
+    private async Task SaveExpenseAsync(ExpensesDetailViewModel args, ExpenseUpdateType type)
     {
+      var expense = args.Item;
       using (var exservice = new ExpenseService())
       {
-        TotalAmount = await exservice.GetTotalAmount(CurrentLoadType);
-      }
-    }
-    private async void ExpenseDataGrid_OnExpenseUpdate(object sender, (ExpenseVm, ExpenseUpdateType) e)
-    {
-      var (expense, updateType) = e;
-      using (var exservice = new ExpenseService())
-      {
-        switch (updateType)
+        switch (type)
         {
           case ExpenseUpdateType.Delete:
             await exservice.Destroy(expense);
@@ -110,6 +103,14 @@ namespace QuinCalc.ViewModels
       await Task.WhenAll(LoadExpenses(PageNum, loadType: CurrentLoadType), LoadTotalAmount());
     }
 
+    private async Task LoadTotalAmount()
+    {
+      using (var exservice = new ExpenseService())
+      {
+        TotalAmount = await exservice.GetTotalAmount(CurrentLoadType);
+      }
+    }
+    
     private async void BackBtn_Click()
     {
       await LoadExpenses(PageNum - 1, loadType: CurrentLoadType);

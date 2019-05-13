@@ -28,6 +28,6 @@ namespace QuinCalc.Views.ExpensesDetail
       InitializeComponent();
     }
 
-    public TodosDetailViewModel ViewModel => DataContext as TodosDetailViewModel;
+    public ExpensesDetailViewModel ViewModel => DataContext as ExpensesDetailViewModel;
   }
 }
