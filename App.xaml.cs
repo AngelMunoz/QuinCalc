@@ -9,29 +9,68 @@ using Windows.ApplicationModel.Background;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-
+using Caliburn.Micro;
+using QuinCalc.Services;
+using System.Collections.Generic;
+using QuinCalc.Helpers;
+using QuinCalc.ViewModels;
+using Microsoft.AppCenter;
+using Microsoft.AppCenter.Analytics;
+using Microsoft.AppCenter.Crashes;
 
 namespace QuinCalc
 {
   /// <summary>
   /// Provides application-specific behavior to supplement the default Application class.
   /// </summary>
-  public sealed partial class App : Application
+  [Windows.UI.Xaml.Data.Bindable]
+  public sealed partial class App
   {
+    private WinRTContainer _container;
+    private Lazy<ActivationService> _activationService;
+
+    private ActivationService ActivationService
+    {
+      get { return _activationService.Value; }
+    }
+
     /// <summary>
     /// Initializes the singleton application object.  This is the first line of authored code
     /// executed, and as such is the logical equivalent of main() or WinMain().
     /// </summary>
     public App()
     {
+      
       InitializeComponent();
-      Suspending += OnSuspending;
-      UnhandledException += App_UnhandledException;
+      EnteredBackground += App_EnteredBackground;
+      Resuming += App_Resuming;
+      UnhandledException += App_UnhandledException1;
+      // TODO WTS: Add your app in the app center and set your secret here. More at https://docs.microsoft.com/en-us/appcenter/sdk/getting-started/uwp
+      AppCenter.Start("{Your App Secret}", typeof(Analytics), typeof(Crashes));
+      Initialize();
+      _activationService = new Lazy<ActivationService>(CreateActivationService);
       using (var db = new QuincalcContext())
       {
         db.Database.Migrate();
       }
+    }
 
+    private void App_UnhandledException1(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs e)
+    {
+      Debug.WriteLine(e.Message, "Quincalc:Exceptions");
+    }
+
+    protected override async void OnLaunched(LaunchActivatedEventArgs args)
+    {
+      if (!args.PrelaunchActivated)
+      {
+        await ActivationService.ActivateAsync(args);
+      }
+    }
+
+    protected override async void OnActivated(IActivatedEventArgs args)
+    {
+      await ActivationService.ActivateAsync(args);
     }
 
     private void App_UnhandledException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs e)
@@ -39,111 +78,78 @@ namespace QuinCalc
       Debug.WriteLine(e.Message, "Quincalc:Exceptions");
     }
 
-    /// <summary>
-    /// Invoked when the application is launched normally by the end user.  Other entry points
-    /// will be used such as when the application is launched to open a specific file.
-    /// </summary>
-    /// <param name="e">Details about the launch request and process.</param>
-    protected override void OnLaunched(LaunchActivatedEventArgs e)
+    protected override void Configure()
     {
-      NotifyUpNextExpenseTask.RemoveTasks();
-      var rootFrame = CreateRootFrame();
-      if (e.PrelaunchActivated == false)
+      // This configures the framework to map between MainViewModel and MainPage
+      // Normally it would map between MainPageViewModel and MainPage
+      var config = new TypeMappingConfiguration
       {
-        if (rootFrame.Content == null)
-        {
-          // When the navigation stack isn't restored navigate to the first page,
-          // configuring the new page by passing required information as a navigation
-          // parameter
-          rootFrame.Navigate(typeof(MainPage), e.Arguments);
-        }
-        // Ensure the current window is active
-        Window.Current.Activate();
-      }
+        IncludeViewSuffixInViewModelNames = false
+      };
 
-      if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
-      {
-        //TODO: Load state from previously suspended application
-      }
+      ViewLocator.ConfigureTypeMappings(config);
+      ViewModelLocator.ConfigureTypeMappings(config);
 
-      if (e.Kind == ActivationKind.Protocol)
-      {
-        rootFrame.Navigate(typeof(MainPage), e.Arguments);
-      }
+      _container = new WinRTContainer();
+      _container.RegisterWinRTServices();
 
-      var expenseNotifier = new NotifyUpNextExpenseTask();
-      var tasks = BackgroundTaskRegistration.GetTaskGroup(NotifyUpNextExpenseTask.TaskGroupName);
-      if (tasks == null || tasks?.AllTasks.Count == 0)
-      {
-        var task = expenseNotifier.RegisterTask();
-        Debug.WriteLine(task.TaskGroup.Name);
-      }
+      _container.PerRequest<ShellViewModel>();
+      _container.PerRequest<HomeViewModel>();
+      _container.PerRequest<ExpensesViewModel>();
+      _container.PerRequest<TodosViewModel>();
+      //_container.PerRequest<QuickNotesViewModel>();
+      //_container.PerRequest<MyListsViewModel>();
+      //_container.PerRequest<ExpensesViewModel>();
+      _container.PerRequest<SettingsViewModel>();
+      _container.PerRequest<ShareTargetViewModel>();
     }
 
-    /// <summary>
-    /// Invoked when Navigation to a certain page fails
-    /// </summary>
-    /// <param name="sender">The Frame which failed navigation</param>
-    /// <param name="e">Details about the navigation failure</param>
-    private void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
+    protected override object GetInstance(Type service, string key)
     {
-      throw new Exception("Failed to load Page " + e.SourcePageType.FullName);
+      return _container.GetInstance(service, key);
     }
 
-    /// <summary>
-    /// Invoked when application execution is being suspended.  Application state is saved
-    /// without knowing whether the application will be terminated or resumed with the contents
-    /// of memory still intact.
-    /// </summary>
-    /// <param name="sender">The source of the suspend request.</param>
-    /// <param name="e">Details about the suspend request.</param>
-    private void OnSuspending(object sender, SuspendingEventArgs e)
+    protected override IEnumerable<object> GetAllInstances(Type service)
     {
-      var deferral = e.SuspendingOperation.GetDeferral();
-      //TODO: Save application state and stop any background activity
+      return _container.GetAllInstances(service);
+    }
+
+    protected override void BuildUp(object instance)
+    {
+      _container.BuildUp(instance);
+    }
+
+    private ActivationService CreateActivationService()
+    {
+      return new ActivationService(_container, typeof(ViewModels.HomeViewModel), new Lazy<UIElement>(CreateShell));
+    }
+
+    private UIElement CreateShell()
+    {
+      var shellPage = new Views.ShellPage();
+      return shellPage;
+    }
+
+    private async void App_EnteredBackground(object sender, EnteredBackgroundEventArgs e)
+    {
+      var deferral = e.GetDeferral();
+      await Singleton<SuspendAndResumeService>.Instance.SaveStateAsync();
       deferral.Complete();
     }
 
-    protected override void OnBackgroundActivated(BackgroundActivatedEventArgs args)
+    private void App_Resuming(object sender, object e)
     {
-      base.OnBackgroundActivated(args);
-      args.TaskInstance.Task.Unregister(true);
+      Singleton<SuspendAndResumeService>.Instance.ResumeApp();
     }
 
-    protected override void OnActivated(IActivatedEventArgs args)
+    protected override async void OnShareTargetActivated(ShareTargetActivatedEventArgs args)
     {
-      base.OnActivated(args);
-      NotifyUpNextExpenseTask.RemoveTasks();
-      var rootFrame = CreateRootFrame();
-      rootFrame.Navigate(typeof(MainPage), args);
-      var expenseNotifier = new NotifyUpNextExpenseTask();
-      var tasks = BackgroundTaskRegistration.GetTaskGroup(NotifyUpNextExpenseTask.TaskGroupName);
-      if (tasks == null || tasks?.AllTasks.Count == 0)
-      {
-        var task = expenseNotifier.RegisterTask();
-        Debug.WriteLine(task.TaskGroup.Name);
-      }
-      Window.Current.Activate();
+      await ActivationService.ActivateFromShareTargetAsync(args);
     }
 
-    private Frame CreateRootFrame()
-    {
-      Frame rootFrame = Window.Current.Content as Frame;
-
-      // Do not repeat app initialization when the Window already has content,
-      // just ensure that the window is active
-      if (rootFrame == null)
-      {
-        // Create a Frame to act as the navigation context and navigate to the first page
-        rootFrame = new Frame();
-
-        rootFrame.NavigationFailed += OnNavigationFailed;
-
-        // Place the frame in the current Window
-        Window.Current.Content = rootFrame;
-      }
-
-      return rootFrame;
-    }
+    //protected override async void OnBackgroundActivated(BackgroundActivatedEventArgs args)
+    //{
+    //  await ActivationService.ActivateAsync(args);
+    //}
   }
 }
