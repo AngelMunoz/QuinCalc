@@ -1,0 +1,84 @@
+﻿<UserControl
+  x:Class="QuinCalc.Views.TodosDetail.DetailsView"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+  xmlns:mutc="using:Microsoft.Toolkit.Uwp.UI.Converters"
+  xmlns:converters="using:QuinCalc.Converters"
+  xmlns:cm="using:Caliburn.Micro"
+  mc:Ignorable="d"
+  d:DesignHeight="300"
+  d:DesignWidth="400" FontFamily="Segoe UI">
+  <UserControl.Resources>
+    <converters:CurrencyConverter x:Key="CurrencyConverter" />
+    <converters:DateTimeConverter x:Key="DateTimeConverter" />
+    <mutc:BoolToObjectConverter x:Key="TrueToVisibleConverter" TrueValue="Collapsed" FalseValue="Visible"/>
+    <mutc:BoolToObjectConverter x:Key="FalseToVisibleConverter" TrueValue="Visible" FalseValue="Collapsed"/>
+    <Style TargetType="TextBlock">
+      <Setter Property="FontSize" Value="20" />
+      <Setter Property="Margin" Value="0,10" />
+    </Style>
+    <Style TargetType="TextBox">
+      <Setter Property="Padding" Value="2.5" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="Height" Value="45" />
+      <Setter Property="FontSize" Value="16" />
+    </Style>
+    <Style TargetType="CalendarDatePicker">
+      <Setter Property="Padding" Value="2.5" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="Height" Value="45" />
+      <Setter Property="FontSize" Value="16" />
+    </Style>
+  </UserControl.Resources>
+  <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <ScrollViewer
+      Name="ForegroundElement"
+      VerticalScrollMode="Enabled"
+      HorizontalAlignment="Stretch"
+      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+      Padding="{StaticResource DetailPageMargin}">
+      <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="5">
+        <TextBlock Text="Name"/>
+        <TextBox 
+          PlaceholderText="Todo's Name" 
+          Text="{x:Bind ViewModel.Item.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBlock Text="Description"/>
+        <TextBox 
+          PlaceholderText="Todo's Description" 
+          Text="{x:Bind ViewModel.Item.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBlock Text="Due To"/>
+        <DatePicker
+          Date="{x:Bind ViewModel.Item.DueDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBlock Text="Is Done"/>
+        <CheckBox IsChecked="{x:Bind ViewModel.Item.IsDone, Mode=TwoWay}"/>
+        <CommandBar Margin="0, 30" Background="{StaticResource SystemControlAcrylicWindowBrush}">
+          <AppBarButton 
+            Icon="Save"
+            Label="Save"
+            Tag="Save"
+            cm:Message.Attach="SaveTodoAsync($dataContext, 'Save')" />
+          <AppBarButton 
+            Icon="Delete"
+            Label="Delete"
+            Tag="Delete"
+            cm:Message.Attach="SaveTodoAsync($dataContext, 'Delete')" />
+          <AppBarButton 
+            Icon="Accept"
+            Label="Done" 
+            Tag="MarkAsDone"
+            cm:Message.Attach="SaveTodoAsync($dataContext, 'MarkAsDone')"
+            Visibility="{x:Bind ViewModel.Item.IsDone, Mode=TwoWay, Converter={StaticResource TrueToVisibleConverter}}" />
+          <AppBarButton 
+            Icon="Cancel"
+            Label="Not Done"
+            Tag="MarkAsNotDone"
+            cm:Message.Attach="SaveTodoAsync($dataContext, 'MarkAsNotDone')"
+            Visibility="{x:Bind ViewModel.Item.IsDone, Mode=TwoWay, Converter={StaticResource FalseToVisibleConverter}}" />
+        </CommandBar>
+      </StackPanel>
+    </ScrollViewer>
+  </Grid>
+</UserControl>
