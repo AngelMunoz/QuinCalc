@@ -1,51 +1,58 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Caliburn.Micro;
 using Microsoft.EntityFrameworkCore;
-using QuinCalcData.Models;
 using QuinCalc.Services;
-using QuinCalc.ViewModels;
-using Windows.UI.Xaml.Controls;
+using QuinCalcData.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
-// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
-
-namespace QuinCalc.Views
+namespace QuinCalc.ViewModels
 {
-  /// <summary>
-  /// An empty page that can be used on its own or navigated to within a Frame.
-  /// </summary>
-  public sealed partial class Home : Page
+  public class HomeViewModel : ViewModelBase
   {
-    public TodoVm UpNextTodo { get; set; }
-    public ExpenseVm UpNextExpense { get; set; }
-    public ExpenseVm UpNextBiweek { get; set; }
+    private TodoVm upNextTodo;
+    private ExpenseVm upNextExpense;
+    private ExpenseVm upNextBiweek;
+    private ExpenseVm upNextMonthly;
+    private bool showExpense;
+    private bool showTodo;
 
-    public Home()
+    public TodoVm UpNextTodo { get => upNextTodo; set => Set(ref upNextTodo, value); }
+    public ExpenseVm UpNextExpense { get => upNextExpense; set => Set(ref upNextExpense, value); }
+    public ExpenseVm UpNextBiweek { get => upNextBiweek; set => Set(ref upNextBiweek, value); }
+    public ExpenseVm UpNextMonthly { get => upNextMonthly; set => Set(ref upNextMonthly, value); }
+    public bool ShowExpense { get => showExpense; set => Set(ref showExpense, value); }
+    public bool ShowTodo { get => showTodo; set => Set(ref showTodo, value); }
+
+    public HomeViewModel(INavigationService navigationService) : base(navigationService)
     {
-      InitializeComponent();
-      LoadUpComing();
+
     }
 
-    /// <summary>
-    /// Loads useful Data from the Database when called
-    /// </summary>
-    /// <returns></returns>
-    private async void LoadUpComing()
+    protected override Task OnInitializeAsync(CancellationToken cancellationToken)
     {
-      var home = new HomeVm();
+      base.OnInitializeAsync(cancellationToken);
+      return LoadUpComing();
+    }
+
+    private async Task LoadUpComing()
+    {
       using (var context = new QuincalcContext())
       {
         var dayToCheck = DateService.GetDayToCheck();
         var biweekAmount = await GetBiweekAmount(context, dayToCheck);
         var totalMonthly = await GetMonthlyAmount(context);
 
-        home.UpNextBiweek = new ExpenseVm
+        UpNextBiweek = new ExpenseVm
         {
           DueDate = DateService.GetNextQuin(dayToCheck),
           Amount = biweekAmount
         };
 
-        home.UpNextMonthly = new ExpenseVm
+        UpNextMonthly = new ExpenseVm
         {
           DueDate = DateService.GetNextQuin(DateTime.DaysInMonth(DateTimeOffset.Now.Year, DateTimeOffset.Now.Month)),
           Amount = totalMonthly
@@ -54,18 +61,18 @@ namespace QuinCalc.Views
         using (var ExService = new ExpenseService())
         {
           var expense = await ExService.FindClosest();
-          home.ShowExpense = expense == null ? false : true;
-          home.UpNextExpense = new ExpenseVm(expense);
+          ShowExpense = expense == null ? false : true;
+          UpNextExpense = new ExpenseVm(expense);
         }
 
         using (var TodService = new TodoService())
         {
           var todo = await TodService.FindClosest();
-          home.ShowTodo = todo == null ? false : true;
-          home.UpNextTodo = new TodoVm(todo);
+          ShowTodo = todo == null ? false : true;
+          UpNextTodo = new TodoVm(todo);
         }
       }
-      DataContext = home;
+
     }
 
     /// <summary>
