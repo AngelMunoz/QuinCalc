@@ -45,8 +45,7 @@ namespace QuinCalc
       EnteredBackground += App_EnteredBackground;
       Resuming += App_Resuming;
       UnhandledException += App_UnhandledException1;
-      // TODO WTS: Add your app in the app center and set your secret here. More at https://docs.microsoft.com/en-us/appcenter/sdk/getting-started/uwp
-      AppCenter.Start("{Your App Secret}", typeof(Analytics), typeof(Crashes));
+      AppCenter.Start("6a3a0926-ddb0-47b8-afc3-b27dc0b61683", typeof(Analytics), typeof(Crashes));
       Initialize();
       _activationService = new Lazy<ActivationService>(CreateActivationService);
       using (var db = new QuincalcContext())
