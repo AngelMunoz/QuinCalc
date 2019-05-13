@@ -13,17 +13,17 @@ namespace QuinCalc.ViewModels
 {
   public class HomeViewModel : ViewModelBase
   {
-    private TodoVm upNextTodo;
-    private ExpenseVm upNextExpense;
-    private ExpenseVm upNextBiweek;
-    private ExpenseVm upNextMonthly;
+    private Todo upNextTodo;
+    private Expense upNextExpense;
+    private Expense upNextBiweek;
+    private Expense upNextMonthly;
     private bool showExpense;
     private bool showTodo;
 
-    public TodoVm UpNextTodo { get => upNextTodo; set => Set(ref upNextTodo, value); }
-    public ExpenseVm UpNextExpense { get => upNextExpense; set => Set(ref upNextExpense, value); }
-    public ExpenseVm UpNextBiweek { get => upNextBiweek; set => Set(ref upNextBiweek, value); }
-    public ExpenseVm UpNextMonthly { get => upNextMonthly; set => Set(ref upNextMonthly, value); }
+    public Todo UpNextTodo { get => upNextTodo; set => Set(ref upNextTodo, value); }
+    public Expense UpNextExpense { get => upNextExpense; set => Set(ref upNextExpense, value); }
+    public Expense UpNextBiweek { get => upNextBiweek; set => Set(ref upNextBiweek, value); }
+    public Expense UpNextMonthly { get => upNextMonthly; set => Set(ref upNextMonthly, value); }
     public bool ShowExpense { get => showExpense; set => Set(ref showExpense, value); }
     public bool ShowTodo { get => showTodo; set => Set(ref showTodo, value); }
 
@@ -46,13 +46,13 @@ namespace QuinCalc.ViewModels
         var biweekAmount = await GetBiweekAmount(context, dayToCheck);
         var totalMonthly = await GetMonthlyAmount(context);
 
-        UpNextBiweek = new ExpenseVm
+        UpNextBiweek = new Expense
         {
           DueDate = DateService.GetNextQuin(dayToCheck),
           Amount = biweekAmount
         };
 
-        UpNextMonthly = new ExpenseVm
+        UpNextMonthly = new Expense
         {
           DueDate = DateService.GetNextQuin(DateTime.DaysInMonth(DateTimeOffset.Now.Year, DateTimeOffset.Now.Month)),
           Amount = totalMonthly
@@ -62,14 +62,14 @@ namespace QuinCalc.ViewModels
         {
           var expense = await ExService.FindClosest();
           ShowExpense = expense == null ? false : true;
-          UpNextExpense = new ExpenseVm(expense);
+          UpNextExpense = expense;
         }
 
         using (var TodService = new TodoService())
         {
           var todo = await TodService.FindClosest();
           ShowTodo = todo == null ? false : true;
-          UpNextTodo = new TodoVm(todo);
+          UpNextTodo = todo;
         }
       }
 

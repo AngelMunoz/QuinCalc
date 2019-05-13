@@ -41,40 +41,40 @@
       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
       Padding="{StaticResource DetailPageMargin}">
       <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="5">
-        <StackPanel>
-          <TextBlock Text="Name" />
-          <TextBox PlaceholderText="Expense's Name"
-                     Text="{x:Bind ViewModel.Item.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-          <TextBlock Text="Amount" />
-          <TextBox PlaceholderText="Expense Amount" 
-                     Text="{x:Bind ViewModel.Item.Amount, Converter={StaticResource CurrencyConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-          <TextBlock Text="Payment Date"/>
-          <CalendarDatePicker Name="DatePickerCtrl" Date="{x:Bind ViewModel.Item.DueDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" DateFormat="{}{month.full} {day.integer}, {year.full}"/>
-          <CommandBar Margin="0, 30" Background="{StaticResource SystemControlAcrylicWindowBrush}">
-            <AppBarButton 
-              Icon="Save"
-              Label="Save"
-              Tag="Save"
-              cm:Message.Attach="SaveExpenseAsync($dataContext, 'Save')" />
-            <AppBarButton 
-              Icon="Delete"
-              Label="Delete"
-              Tag="Delete"
-              cm:Message.Attach="SaveExpenseAsync($dataContext, 'Delete')" />
-            <AppBarButton 
-              Icon="Accept"
-              Label="Done" 
-              Tag="MarkAsDone"
-              cm:Message.Attach="SaveExpenseAsync($dataContext, 'MarkAsDone')"
-              Visibility="{x:Bind ViewModel.Item.IsDone, Mode=TwoWay, Converter={StaticResource TrueToVisibleConverter}}" />
-            <AppBarButton 
-              Icon="Cancel"
-              Label="Not Done"
-              Tag="MarkAsNotDone"
-              cm:Message.Attach="SaveExpenseAsync($dataContext, 'MarkAsNotDone')"
-              Visibility="{x:Bind ViewModel.Item.IsDone, Mode=TwoWay, Converter={StaticResource FalseToVisibleConverter}}" />
-          </CommandBar>
-        </StackPanel>
+        <TextBlock Text="Name" />
+        <TextBox 
+          PlaceholderText="Expense's Name"
+          Text="{x:Bind ViewModel.Item.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBlock Text="Amount" />
+        <TextBox 
+          PlaceholderText="Expense Amount" 
+          Text="{x:Bind ViewModel.Item.Amount, Converter={StaticResource CurrencyConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+        <TextBlock Text="Payment Date"/>
+        <DatePicker Date="{x:Bind ViewModel.Item.DueDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+        <CommandBar Margin="0, 30" Background="{StaticResource SystemControlAcrylicWindowBrush}">
+          <AppBarButton 
+            Icon="Save"
+            Label="Save"
+            Tag="Save"
+            cm:Message.Attach="SaveExpenseAsync($dataContext, 'Save')" />
+          <AppBarButton 
+            Icon="Delete"
+            Label="Delete"
+            Tag="Delete"
+            cm:Message.Attach="SaveExpenseAsync($dataContext, 'Delete')" />
+          <AppBarButton 
+            Icon="Accept"
+            Label="Done" 
+            Tag="MarkAsDone"
+            cm:Message.Attach="SaveExpenseAsync($dataContext, 'MarkAsDone')"
+            Visibility="{x:Bind ViewModel.Item.IsDone, Mode=TwoWay, Converter={StaticResource TrueToVisibleConverter}}" />
+          <AppBarButton 
+            Icon="Cancel"
+            Label="Not Done"
+            Tag="MarkAsNotDone"
+            cm:Message.Attach="SaveExpenseAsync($dataContext, 'MarkAsNotDone')"
+            Visibility="{x:Bind ViewModel.Item.IsDone, Mode=TwoWay, Converter={StaticResource FalseToVisibleConverter}}" />
+        </CommandBar>
       </StackPanel>
     </ScrollViewer>
   </Grid>

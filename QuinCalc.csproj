@@ -112,6 +112,7 @@
     </Compile>
     <Compile Include="Converters\DateTimeConverter.cs" />
     <Compile Include="Converters\CurrencyConverter.cs" />
+    <Compile Include="Enums\TodoUpdateType.cs" />
     <Compile Include="Enums\LoadExpenseType.cs" />
     <Compile Include="Enums\ExpenseUpdateType.cs" />
     <Compile Include="Helpers\DataRequestExtensions.cs" />
@@ -142,7 +143,6 @@
     <Compile Include="Services\UserActivityService.cs" />
     <Compile Include="Tasks\NotifyUpNextExpenseTask.cs" />
     <Compile Include="ViewModels\ExpensesViewModel.cs" />
-    <Compile Include="ViewModels\ExpenseVm.cs" />
     <Compile Include="ViewModels\HomeViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\SharedDataStorageItemsViewModel.cs" />
@@ -153,7 +153,6 @@
     <Compile Include="ViewModels\ExpensesDetailViewModel.cs" />
     <Compile Include="ViewModels\TodosDetailViewModel.cs" />
     <Compile Include="ViewModels\TodosViewModel.cs" />
-    <Compile Include="ViewModels\TodoVm.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="Views\ExpensesDetail\DetailsView.xaml.cs">
       <DependentUpon>DetailsView.xaml</DependentUpon>

@@ -4,12 +4,30 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Style="{StaticResource PageStyle}"
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    xmlns:mutc="using:Microsoft.Toolkit.Uwp.UI.Converters"
+    xmlns:converters="using:QuinCalc.Converters"
     xmlns:cm="using:Caliburn.Micro"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:Windows10version1809="http://schemas.microsoft.com/winfx/2006/xaml/presentation?IsApiContractPresent(Windows.Foundation.UniversalApiContract, 7)"
     mc:Ignorable="d"
     Background="{ThemeResource SystemControlAcrylicWindowBrush}">
   <Page.Resources>
+    <converters:CurrencyConverter x:Key="CurrencyConverter" />
+    <converters:DateTimeConverter x:Key="DateTimeConverter" />
+    <mutc:BoolToObjectConverter x:Key="TrueToVisibleConverter" TrueValue="Collapsed" FalseValue="Visible"/>
+    <mutc:BoolToObjectConverter x:Key="FalseToVisibleConverter" TrueValue="Visible" FalseValue="Collapsed"/>
+    <mutc:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    <Style x:Key="PrefixLabel" TargetType="TextBlock">
+      <Setter Property="FontSize" Value="20" />
+      <Setter Property="Margin" Value="10, 0" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style x:Key="SuffixLabel" TargetType="TextBlock">
+      <Setter Property="FontSize" Value="22" />
+      <Setter Property="Margin" Value="10, 0" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
 
     <DataTemplate x:Key="ItemTemplate">
       <ContentControl cm:View.Model="{Binding}" cm:View.Context="MasterView" />
@@ -27,12 +45,8 @@
               <CompositeTransform ScaleX="2" ScaleY="2"/>
             </SymbolIcon.RenderTransform>
           </SymbolIcon>
-          <TextBlock Text="{Binding}" FontSize="24" Margin="0,12"/>
           <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock Text="Or Create A Fresh One" Margin="5" FontSize="24"/>
-            <Button x:Name="CreateTodoBtn" Height="40" Width="40" HorizontalAlignment="Center" cm:Message.Attach="[Event Click] = [Action CreateTodoBtn_Click()]" >
-              <SymbolIcon Symbol="Add" />
-            </Button>
+            <TextBlock Text="Select a To-Do From The List Or Create A Fresh One" Margin="5" FontSize="24"/>
           </StackPanel>
         </StackPanel>
       </Grid>
@@ -49,7 +63,42 @@
     </DataTemplate>
 
   </Page.Resources>
-
+  <Page.BottomAppBar>
+    <CommandBar>
+      <AppBarButton 
+        Name="BackBtn" 
+        Icon="Back" 
+        cm:Message.Attach="[Event Click] = [Action BackBtn_Click()]" 
+        IsEnabled="{x:Bind ViewModel.BackEnabled, Mode=OneWay}" />
+      <AppBarButton 
+        Name="NextBtn" 
+        Icon="Forward" 
+        cm:Message.Attach="[Event Click] = [Action NextBtn_Click()]"
+        IsEnabled="{x:Bind ViewModel.NextEnabled, Mode=OneWay}" />
+      <AppBarButton 
+        Name="AddBtn" 
+        Icon="Add" 
+        Label="Add New Expense" 
+        cm:Message.Attach="[Event Click] = [Action CreateTodoAsync()]"
+        />
+      <AppBarToggleButton 
+        Name="HideDoneCheck" 
+        Label="Hide Done" 
+        Icon="Filter"
+        cm:Message.Attach="[Event Checked] = [Action HideDoneCheck_Checked() ] ; [Event Unchecked] = [Action HideDoneCheck_Unchecked() ]"/>
+      <CommandBar.Content>
+        <ScrollViewer HorizontalScrollMode="Auto" VerticalScrollMode="Disabled" HorizontalScrollBarVisibility="Auto">
+          <StackPanel Orientation="Horizontal">
+            <TextBlock Style="{StaticResource PrefixLabel}" Text="Items: "/>
+            <TextBlock Style="{StaticResource SuffixLabel}" Text="{x:Bind ViewModel.TotalTodoCount, Mode=OneWay}"/>
+            <AppBarSeparator />
+            <TextBlock Style="{StaticResource PrefixLabel}" Text="Page: "/>
+            <TextBlock Style="{StaticResource SuffixLabel}" Text="{x:Bind ViewModel.PageNum, Mode=OneWay}"/>
+          </StackPanel>
+        </ScrollViewer>
+      </CommandBar.Content>
+    </CommandBar>
+  </Page.BottomAppBar>
   <Grid x:Name="ContentArea">
     <controls:MasterDetailsView
       x:Name="MasterDetailsViewControl"
@@ -63,26 +112,6 @@
       BorderBrush="Transparent"
       MasterHeader="To-Do's"
       Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}"
-      MasterHeaderTemplate="{StaticResource MasterHeaderTemplate}">
-      <controls:MasterDetailsView.MasterCommandBar>
-        <CommandBar>
-          <AppBarButton x:Name="AddMobileBtn" Icon="Add" Label="Add New" Visibility="Collapsed" cm:Message.Attach="[Event Click] = [Action CreateTodoBtn_Click()]" />
-          <AppBarButton x:Name="BackBtn" Icon="Back" Label="Back" cm:Message.Attach="[Event Click] = [Action BackBtn_Click()]"/>
-          <AppBarButton x:Name="NextBtn" Icon="Forward" Label="Forward" cm:Message.Attach="[Event Click] = [Action NextBtn_Click()]"/>
-          <CommandBar.Content>
-            <TextBlock Margin="12,14">
-              <Run Text="{x:Bind ViewModel.TotalTodoCount}" />
-              <Run Text="To-do's" />
-            </TextBlock>
-          </CommandBar.Content>
-        </CommandBar>
-      </controls:MasterDetailsView.MasterCommandBar>
-      <controls:MasterDetailsView.DetailsCommandBar>
-        <CommandBar>
-          <AppBarButton x:Name="SaveBtn" Icon="Save" Label="Save To-do" cm:Message.Attach="[Event Click] = [Action SaveBtn_Click()]"/>
-          <AppBarButton x:Name="DeleteBtn" Icon="Delete" Label="Delete To-do" cm:Message.Attach="[Event Click] = [Action DeleteBtn_Click()]" />
-        </CommandBar>
-      </controls:MasterDetailsView.DetailsCommandBar>
-    </controls:MasterDetailsView>
+      MasterHeaderTemplate="{StaticResource MasterHeaderTemplate}" />
   </Grid>
 </Page>

@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using QuinCalc.Enums;
 using QuinCalc.Services;
 using QuinCalcData.Models;
 using System;
@@ -15,26 +16,47 @@ namespace QuinCalc.ViewModels
   {
     private int pageNum = 1;
     private int totalTodoCount = 0;
+    private int pageLimit = 5;
+    private bool nextEnabled;
+    private bool backEnabled;
+    private bool saveEnabled;
+    private LoadExpenseType currentLoadType = LoadExpenseType.All;
 
     public int PageNum { get => pageNum; private set => Set(ref pageNum, value); }
     public int TotalTodoCount { get => totalTodoCount; private set => Set(ref totalTodoCount, value); }
+    public int PageLimit { get => pageLimit; set => Set(ref pageLimit, value); }
 
-    public bool NextEnabled { get; set; }
-    public bool BackEnabled { get; set; }
-    public bool SaveEnabled { get; set; }
+    public bool NextEnabled { get => nextEnabled; set => Set(ref nextEnabled, value); }
+    public bool BackEnabled { get => backEnabled; set => Set(ref backEnabled, value); }
+    public bool SaveEnabled { get => saveEnabled; set => Set(ref saveEnabled, value); }
+
+    public LoadExpenseType CurrentLoadType { get => currentLoadType; set => Set(ref currentLoadType, value); }
 
     protected override Task OnInitializeAsync(CancellationToken cancellationToken)
     {
       base.OnInitializeAsync(cancellationToken);
-      return LoadTodos();
+      return LoadTodosAsync();
     }
 
-    private async Task LoadTodos(int page = 1, int limit = 5)
+    private async Task LoadTodosAsync(int page = 1, int limit = 5, LoadExpenseType loadType = LoadExpenseType.All)
     {
       var skip = (page - 1) * limit;
       using (var todservice = new TodoService())
       {
-        var (count, todos) = await todservice.Find(skip, limit);
+        int count = 0;
+        List<Todo> todos = null;
+        switch (loadType)
+        {
+          case LoadExpenseType.All:
+            (count, todos) = await todservice.Find(skip, limit);
+            break;
+          case LoadExpenseType.Done:
+            (count, todos) = await todservice.FindByIsDone(true, skip, limit);
+            break;
+          case LoadExpenseType.NotDone:
+            (count, todos) = await todservice.FindByIsDone(false, skip, limit);
+            break;
+        }
         TotalTodoCount = count;
         Items.Clear();
         Items.AddRange(todos.Select(t => new TodosDetailViewModel(t)));
@@ -44,7 +66,33 @@ namespace QuinCalc.ViewModels
       PageNum = page;
     }
 
-    private async void CreateTodoBtn_Click()
+    private async Task SaveTodoAsync(TodosDetailViewModel args, TodoUpdateType type)
+    {
+      var expense = args.Item;
+      using (var exservice = new TodoService())
+      {
+        switch (type)
+        {
+          case TodoUpdateType.Delete:
+            await exservice.Destroy(expense);
+            break;
+          case TodoUpdateType.MarkAsDone:
+            expense.IsDone = true;
+            await exservice.Update(expense);
+            break;
+          case TodoUpdateType.MarkAsNotDone:
+            expense.IsDone = false;
+            await exservice.Update(expense);
+            break;
+          case TodoUpdateType.Save:
+            await exservice.Update(expense);
+            break;
+        }
+      }
+      await LoadTodosAsync(PageNum, PageLimit);
+    }
+
+    private async void CreateTodoAsync()
     {
       using (var todservice = new TodoService())
       {
@@ -55,51 +103,29 @@ namespace QuinCalc.ViewModels
           return;
         }
       }
-      await LoadTodos();
-    }
-
-    private async void SaveBtn_Click()
-    {
-      SaveEnabled = false;
-      //TodoVm current = SelectedItem as TodoVm;
-      //using (var todservice = new TodoService())
-      //{
-      //  var success = await todservice.Update(current);
-      //  if (!success)
-      //  {
-      //    // TODO: add unsuccessful code
-      //    return;
-      //  }
-      //}
-      await LoadTodos(PageNum);
-      SaveEnabled = true;
-    }
-
-    private async void DeleteBtn_Click()
-    {
-      SaveEnabled = false;
-      //TodoVm current = SelectedItem as TodoVm;
-      //using (var todservice = new TodoService())
-      //{
-      //  var success = await todservice.Destroy(current);
-      //  if (!success)
-      //  {
-      //    // TODO: add unsuccessful code
-      //    return;
-      //  }
-      //}
-      await LoadTodos(PageNum);
-      SaveEnabled = true;
+      await LoadTodosAsync();
     }
 
     private async void BackBtn_Click()
     {
-      await LoadTodos(PageNum - 1);
+      await LoadTodosAsync(PageNum - 1, PageLimit);
     }
 
     private async void NextBtn_Click()
     {
-      await LoadTodos(PageNum + 1);
+      await LoadTodosAsync(PageNum + 1, PageLimit);
+    }
+
+    private async void HideDoneCheck_Checked()
+    {
+      CurrentLoadType = LoadExpenseType.NotDone;
+      await LoadTodosAsync(PageNum, PageLimit, CurrentLoadType);
+    }
+
+    private async void HideDoneCheck_Unchecked()
+    {
+      CurrentLoadType = LoadExpenseType.All;
+      await LoadTodosAsync(PageNum, PageLimit, CurrentLoadType);
     }
   }
 }

@@ -45,7 +45,7 @@
             </SymbolIcon.RenderTransform>
           </SymbolIcon>
           <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock Text="Select an Expense From The List Or Create A Fresh One" FontSize="24" Margin="0,12"/>
+            <TextBlock Text="Select An Expense From The List Or Create A Fresh One" FontSize="24" Margin="0,12"/>
           </StackPanel>
         </StackPanel>
       </Grid>
