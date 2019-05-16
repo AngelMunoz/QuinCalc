@@ -22,6 +22,15 @@ steps:
   inputs:
     restoreSolution: '$(solution)'
 
+- task: DownloadSecureFile@1
+  inputs:
+    secureFile: 'QuinCalc_StoreKey.pfx'
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(Agent.TempDirectory)'
+    Contents: '**'
+    TargetFolder: 'QuinCalc'
+
 - task: VSBuild@1
   inputs:
     platform: 'x86'
