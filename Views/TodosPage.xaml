@@ -46,7 +46,7 @@
             </SymbolIcon.RenderTransform>
           </SymbolIcon>
           <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock Text="Select a To-Do From The List Or Create A Fresh One" Margin="5" FontSize="24"/>
+            <TextBlock x:Uid="TodosPage_Unselected" Margin="5" FontSize="24"/>
           </StackPanel>
         </StackPanel>
       </Grid>
@@ -64,35 +64,33 @@
 
   </Page.Resources>
   <Page.BottomAppBar>
-    <CommandBar>
-      <AppBarButton 
-        Name="BackBtn" 
-        Icon="Back" 
-        cm:Message.Attach="[Event Click] = [Action BackBtn_Click()]" 
+    <CommandBar
+      Background="{ThemeResource SystemControlAcrylicWindowBrush}">
+      <AppBarButton
+        x:Uid="TodosPage_BackBtn_Label"
+        Icon="Back"
+        cm:Message.Attach="[Event Click] = [Action BackBtn_Click()]"
         IsEnabled="{x:Bind ViewModel.BackEnabled, Mode=OneWay}" />
-      <AppBarButton 
-        Name="NextBtn" 
-        Icon="Forward" 
+      <AppBarButton
+        x:Uid="TodosPage_NextBtn_Label"
+        Icon="Forward"
         cm:Message.Attach="[Event Click] = [Action NextBtn_Click()]"
         IsEnabled="{x:Bind ViewModel.NextEnabled, Mode=OneWay}" />
-      <AppBarButton 
-        Name="AddBtn" 
-        Icon="Add" 
-        Label="Add New Expense" 
-        cm:Message.Attach="[Event Click] = [Action CreateTodoAsync()]"
-        />
-      <AppBarToggleButton 
-        Name="HideDoneCheck" 
-        Label="Hide Done" 
+      <AppBarButton
+        x:Uid="TodosPage_AddBtn_Label"
+        Icon="Add"
+        cm:Message.Attach="[Event Click] = [Action CreateTodoAsync()]" />
+      <AppBarToggleButton
+        x:Uid="TodosPage_HideDoneBtn_Label"
         Icon="Filter"
         cm:Message.Attach="[Event Checked] = [Action HideDoneCheck_Checked() ] ; [Event Unchecked] = [Action HideDoneCheck_Unchecked() ]"/>
       <CommandBar.Content>
         <ScrollViewer HorizontalScrollMode="Auto" VerticalScrollMode="Disabled" HorizontalScrollBarVisibility="Auto">
           <StackPanel Orientation="Horizontal">
-            <TextBlock Style="{StaticResource PrefixLabel}" Text="Items: "/>
+            <TextBlock x:Uid="TodosPage_Items" Style="{StaticResource PrefixLabel}" />
             <TextBlock Style="{StaticResource SuffixLabel}" Text="{x:Bind ViewModel.TotalTodoCount, Mode=OneWay}"/>
             <AppBarSeparator />
-            <TextBlock Style="{StaticResource PrefixLabel}" Text="Page: "/>
+            <TextBlock x:Uid="TodosPage_Page" Style="{StaticResource PrefixLabel}" />
             <TextBlock Style="{StaticResource SuffixLabel}" Text="{x:Bind ViewModel.PageNum, Mode=OneWay}"/>
           </StackPanel>
         </ScrollViewer>
@@ -102,6 +100,7 @@
   <Grid x:Name="ContentArea">
     <controls:MasterDetailsView
       x:Name="MasterDetailsViewControl"
+      x:Uid="TodosPage_MasterDetail_Header"
       BackButtonBehavior="Automatic"
       ItemsSource="{x:Bind ViewModel.Items}"
       SelectedItem="{x:Bind ViewModel.ActiveItem, Mode=OneWay}"
@@ -110,8 +109,7 @@
       NoSelectionContentTemplate="{StaticResource NoSelectionContentTemplate}"
       Loaded="MasterDetailsViewControl_Loaded"
       BorderBrush="Transparent"
-      MasterHeader="To-Do's"
-      Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}"
+      Background="{ThemeResource SystemControlAcrylicWindowBrush}"
       MasterHeaderTemplate="{StaticResource MasterHeaderTemplate}" />
   </Grid>
 </Page>

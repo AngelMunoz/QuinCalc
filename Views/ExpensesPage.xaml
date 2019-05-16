@@ -45,7 +45,7 @@
             </SymbolIcon.RenderTransform>
           </SymbolIcon>
           <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock Text="Select An Expense From The List Or Create A Fresh One" FontSize="24" Margin="0,12"/>
+            <TextBlock x:Uid="ExpensePage_Unselected" FontSize="24" Margin="0,12"/>
           </StackPanel>
         </StackPanel>
       </Grid>
@@ -63,38 +63,37 @@
 
   </Page.Resources>
   <Page.BottomAppBar>
-    <CommandBar>
-      <AppBarButton 
-        Name="BackBtn" 
+    <CommandBar
+      Background="{ThemeResource SystemControlAcrylicWindowBrush}">
+      <AppBarButton
+        x:Uid="ExpensesPage_BackBtn_Label"
         Icon="Back" 
         cm:Message.Attach="[Event Click] = [Action BackBtn_Click()]" 
         IsEnabled="{x:Bind ViewModel.ShowBackBtn, Mode=OneWay}" />
-      <AppBarButton 
-        Name="NextBtn" 
+      <AppBarButton
+        x:Uid="ExpensesPage_NextBtn_Label"
         Icon="Forward" 
         cm:Message.Attach="[Event Click] = [Action NextBtn_Click()]"
         IsEnabled="{x:Bind ViewModel.ShowNextBtn, Mode=OneWay}" />
       <AppBarButton 
-        Name="AddBtn" 
+        x:Uid="ExpensesPage_AddBtn_Label"
         Icon="Add" 
-        Label="Add New Expense" 
         cm:Message.Attach="[Event Click] = [Action CreateExpenseAsync()]"
         />
       <AppBarToggleButton 
-        Name="HideDoneCheck" 
-        Label="Hide Done" 
+        x:Uid="ExpensePage_HideDoneBtn_Label"
         Icon="Filter"
         cm:Message.Attach="[Event Checked] = [Action HideDoneCheck_Checked() ] ; [Event Unchecked] = [Action HideDoneCheck_Unchecked() ]"/>
       <CommandBar.Content>
         <ScrollViewer HorizontalScrollMode="Auto" VerticalScrollMode="Disabled" HorizontalScrollBarVisibility="Auto">
           <StackPanel Orientation="Horizontal">
-            <TextBlock Style="{StaticResource PrefixLabel}" Text="Amount: "/>
+            <TextBlock x:Uid="ExpensePage_Amount" Style="{StaticResource PrefixLabel}" />
             <TextBlock Style="{StaticResource SuffixLabel}" Text="{x:Bind ViewModel.TotalAmount, Converter={StaticResource CurrencyConverter}, Mode=OneWay}"/>
             <AppBarSeparator />
-            <TextBlock Style="{StaticResource PrefixLabel}" Text="Items: "/>
+            <TextBlock x:Uid="ExpensePage_Items" Style="{StaticResource PrefixLabel}" />
             <TextBlock Style="{StaticResource SuffixLabel}" Text="{x:Bind ViewModel.TotalCount, Mode=OneWay}"/>
             <AppBarSeparator />
-            <TextBlock Style="{StaticResource PrefixLabel}" Text="Page: "/>
+            <TextBlock x:Uid="ExpensePage_Page" Style="{StaticResource PrefixLabel}" />
             <TextBlock Style="{StaticResource SuffixLabel}" Text="{x:Bind ViewModel.PageNum, Mode=OneWay}"/>
           </StackPanel>
         </ScrollViewer>
@@ -104,6 +103,7 @@
   <Grid x:Name="ContentArea">
     <controls:MasterDetailsView
       x:Name="MasterDetailsViewControl"
+      x:Uid="ExpensePage_MasterDetail_Header"
       BackButtonBehavior="Automatic"
       ItemsSource="{x:Bind ViewModel.Items}"
       SelectedItem="{x:Bind ViewModel.ActiveItem, Mode=OneWay}"
@@ -112,8 +112,7 @@
       NoSelectionContentTemplate="{StaticResource NoSelectionContentTemplate}"
       Loaded="MasterDetailsViewControl_Loaded"
       BorderBrush="Transparent"
-      MasterHeader="Expenses"
-      Background="{ThemeResource SystemControlPageBackgroundChromeLowBrush}"
+      Background="{ThemeResource SystemControlAcrylicWindowBrush}"
       MasterHeaderTemplate="{StaticResource MasterHeaderTemplate}" />
   </Grid>
 </Page>

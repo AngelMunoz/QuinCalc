@@ -41,40 +41,36 @@
       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
       Padding="{StaticResource DetailPageMargin}">
       <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="5">
-        <TextBlock Text="Name"/>
-        <TextBox 
-          PlaceholderText="Todo's Name" 
+        <TextBlock x:Uid="TodosPage_Form_Name_Label"/>
+        <TextBox
+          x:Uid="TodosPage_Form_Name_Placeholder"
           Text="{x:Bind ViewModel.Item.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-        <TextBlock Text="Description"/>
-        <TextBox 
-          PlaceholderText="Todo's Description" 
+        <TextBlock x:Uid="TodosPage_Form_Description_Label" />
+        <TextBox
+          x:Uid="TodosPage_Form_Description_Placeholder"
           Text="{x:Bind ViewModel.Item.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-        <TextBlock Text="Due To"/>
+        <TextBlock x:Uid="TodosPage_Form_DueTo_Label" />
         <DatePicker
           Date="{x:Bind ViewModel.Item.DueDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-        <TextBlock Text="Is Done"/>
+        <TextBlock x:Uid="TodosPage_Form_IsDone_Label"/>
         <CheckBox IsChecked="{x:Bind ViewModel.Item.IsDone, Mode=TwoWay}"/>
         <CommandBar Margin="0, 30" Background="{StaticResource SystemControlAcrylicWindowBrush}">
-          <AppBarButton 
+          <AppBarButton
+            x:Uid="TodosPage_Form_Savebtn_Label"
             Icon="Save"
-            Label="Save"
-            Tag="Save"
             cm:Message.Attach="SaveTodoAsync($dataContext, 'Save')" />
           <AppBarButton 
+            x:Uid="TodosPage_Form_Deletebtn_Label"
             Icon="Delete"
-            Label="Delete"
-            Tag="Delete"
             cm:Message.Attach="SaveTodoAsync($dataContext, 'Delete')" />
-          <AppBarButton 
+          <AppBarButton
+            x:Uid="TodosPage_Form_MarkAsDonebtn_Label"
             Icon="Accept"
-            Label="Done" 
-            Tag="MarkAsDone"
             cm:Message.Attach="SaveTodoAsync($dataContext, 'MarkAsDone')"
             Visibility="{x:Bind ViewModel.Item.IsDone, Mode=TwoWay, Converter={StaticResource TrueToVisibleConverter}}" />
-          <AppBarButton 
+          <AppBarButton
+            x:Uid="TodosPage_Form_MarkAsNotDonebtn_Label"
             Icon="Cancel"
-            Label="Not Done"
-            Tag="MarkAsNotDone"
             cm:Message.Attach="SaveTodoAsync($dataContext, 'MarkAsNotDone')"
             Visibility="{x:Bind ViewModel.Item.IsDone, Mode=TwoWay, Converter={StaticResource FalseToVisibleConverter}}" />
         </CommandBar>
