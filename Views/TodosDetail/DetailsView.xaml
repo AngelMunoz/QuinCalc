@@ -54,7 +54,7 @@
           Date="{x:Bind ViewModel.Item.DueDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
         <TextBlock x:Uid="TodosPage_Form_IsDone_Label"/>
         <CheckBox IsChecked="{x:Bind ViewModel.Item.IsDone, Mode=TwoWay}"/>
-        <CommandBar Margin="0, 30" Background="{StaticResource SystemControlAcrylicWindowBrush}">
+        <CommandBar Margin="0, 30">
           <AppBarButton
             x:Uid="TodosPage_Form_Savebtn_Label"
             Icon="Save"

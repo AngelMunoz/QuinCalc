@@ -51,7 +51,7 @@
           Text="{x:Bind ViewModel.Item.Amount, Converter={StaticResource CurrencyConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
         <TextBlock x:Uid="ExpensePage_Form_Payment_Label" />
         <DatePicker Date="{x:Bind ViewModel.Item.DueDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-        <CommandBar Margin="0, 30" Background="{StaticResource SystemControlAcrylicWindowBrush}">
+        <CommandBar Margin="0, 30">
           <AppBarButton
             x:Uid="ExpensePage_Form_Save_Btn_Label"
             Icon="Save"
