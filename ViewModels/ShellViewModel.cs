@@ -1,5 +1,4 @@
 ﻿using Caliburn.Micro;
-using Microsoft.AppCenter.Analytics;
 using QuinCalc.Helpers;
 using QuinCalc.Views;
 using System;
@@ -76,7 +75,6 @@ namespace QuinCalc.ViewModels
     {
       if (args.IsSettingsInvoked)
       {
-        Analytics.TrackEvent("Navigated To", new Dictionary<string, string> { { "Page", typeof(SettingsPage).ToString() } });
         _navigationService.Navigate(typeof(SettingsPage));
         return;
       }
@@ -85,14 +83,12 @@ namespace QuinCalc.ViewModels
                       .OfType<WinUI.NavigationViewItem>()
                       .First(menuItem => (string)menuItem.Content == (string)args.InvokedItem);
       var pageType = item.GetValue(NavHelper.NavigateToProperty) as Type;
-      Analytics.TrackEvent("Navigated To", new Dictionary<string, string> { { "Page", pageType.ToString() } });
       var viewModelType = ViewModelLocator.LocateTypeForViewType(pageType, false);
       _navigationService.NavigateToViewModel(viewModelType);
     }
 
     private void OnBackRequested(WinUI.NavigationView sender, WinUI.NavigationViewBackRequestedEventArgs args)
     {
-      Analytics.TrackEvent("Go Back");
       _navigationService.GoBack();
     }
 
