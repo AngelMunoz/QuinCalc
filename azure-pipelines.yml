@@ -17,6 +17,9 @@ variables:
 
 steps:
 - task: NuGetToolInstaller@0
+  inputs:
+    versionSpec: '4.9.2'
+
 
 - task: NuGetCommand@2
   inputs:
@@ -29,11 +32,11 @@ steps:
   inputs:
     SourceFolder: '$(Agent.TempDirectory)'
     Contents: '**'
-    TargetFolder: 'QuinCalc'
+    TargetFolder: '$(Build.SourcesDirectory)'
 
 - task: VSBuild@1
   inputs:
     platform: 'x86'
     solution: '$(solution)'
     configuration: '$(buildConfiguration)'
-    msbuildArgs: '/p:AppxBundlePlatforms="$(buildPlatform)" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload /p:AppxPackageSigningEnabled=false'
+    msbuildArgs: '/p:AppxBundlePlatforms="$(buildPlatform)" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload'

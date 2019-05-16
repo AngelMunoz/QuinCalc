@@ -1,7 +1,7 @@
 # QuinCalc
 Just ignore it too
 
-[![Build status](https://build.appcenter.ms/v0.1/apps/bf20dfb7-a897-483f-a45b-b9ee30725060/branches/master/badge)](https://appcenter.ms)
+[![Build Status](https://dev.azure.com/TunaxorApps/QuinCalc/_apis/build/status/AngelMunoz.QuinCalc?branchName=master)](https://dev.azure.com/TunaxorApps/QuinCalc/_build/latest?definitionId=2&branchName=master)
 -----------
 Quincalc Is a small sample of a Universal Windows Platform Using Entity Framework Core, SQLite.
 
