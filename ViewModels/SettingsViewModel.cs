@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using Microsoft.AppCenter.Analytics;
 using QuinCalc.Services;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,7 @@ namespace QuinCalc.ViewModels
 
     public async void LaunchFeedbackHub()
     {
+      Analytics.TrackEvent("Launched Feedback");
       // This launcher is part of the Store Services SDK https://docs.microsoft.com/en-us/windows/uwp/monetize/microsoft-store-services-sdk
       var launcher = Microsoft.Services.Store.Engagement.StoreServicesFeedbackLauncher.GetDefault();
       await launcher.LaunchAsync();
@@ -42,6 +44,7 @@ namespace QuinCalc.ViewModels
 
     public async void SwitchTheme(ElementTheme theme)
     {
+      Analytics.TrackEvent("Switched Theme", new Dictionary<string, string> { { "Theme", Enum.GetName(typeof(ElementTheme), theme) } });
       await ThemeSelectorService.SetThemeAsync(theme);
     }
 
