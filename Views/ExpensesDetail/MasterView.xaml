@@ -6,7 +6,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:converters="using:QuinCalc.Converters"
     xmlns:mutc="using:Microsoft.Toolkit.Uwp.UI.Converters"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
