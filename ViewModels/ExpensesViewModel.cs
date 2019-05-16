@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using Microsoft.AppCenter.Analytics;
 using QuinCalc.Enums;
 using QuinCalc.Services;
 using QuinCalcData.Models;
@@ -75,6 +76,7 @@ namespace QuinCalc.ViewModels
         }
       }
       await Task.WhenAll(LoadExpenses(), LoadTotalAmount());
+      Analytics.TrackEvent("Created Expense");
     }
 
     private async Task SaveExpenseAsync(ExpensesDetailViewModel args, ExpenseUpdateType type)
@@ -101,6 +103,7 @@ namespace QuinCalc.ViewModels
         }
       }
       await Task.WhenAll(LoadExpenses(PageNum, loadType: CurrentLoadType), LoadTotalAmount());
+      Analytics.TrackEvent("Saved Expense", new Dictionary<string, string> { { "Save Type", Enum.GetName(typeof(ExpenseUpdateType), type) } });
     }
 
     private async Task LoadTotalAmount()
@@ -113,22 +116,26 @@ namespace QuinCalc.ViewModels
     
     private async void BackBtn_Click()
     {
+      Analytics.TrackEvent("Navigated Expense", new Dictionary<string, string> { { "Direction", "Back" } });
       await LoadExpenses(PageNum - 1, loadType: CurrentLoadType);
     }
 
     private async void NextBtn_Click()
     {
+      Analytics.TrackEvent("Navigated Expense", new Dictionary<string, string> { { "Direction", "Forwards" } });
       await LoadExpenses(PageNum + 1, loadType: CurrentLoadType);
     }
 
     private async void HideDoneCheck_Checked()
     {
+      Analytics.TrackEvent("Filtered Expenses", new Dictionary<string, string> { { "Load Type", "Not Done" } });
       CurrentLoadType = LoadExpenseType.NotDone;
       await Task.WhenAll(LoadExpenses(PageNum, loadType: CurrentLoadType), LoadTotalAmount());
     }
 
     private async void HideDoneCheck_Unchecked()
     {
+      Analytics.TrackEvent("Filtered Expenses", new Dictionary<string, string> { { "Load Type", "All" } });
       CurrentLoadType = LoadExpenseType.All;
       await Task.WhenAll(LoadExpenses(PageNum, loadType: CurrentLoadType), LoadTotalAmount());
     }

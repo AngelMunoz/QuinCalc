@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using Microsoft.AppCenter.Analytics;
 using QuinCalc.Enums;
 using QuinCalc.Services;
 using QuinCalcData.Models;
@@ -90,6 +91,7 @@ namespace QuinCalc.ViewModels
         }
       }
       await LoadTodosAsync(PageNum, PageLimit);
+      Analytics.TrackEvent("Saved Todo", new Dictionary<string, string> { { "Save Type", Enum.GetName(typeof(TodoUpdateType), type) } });
     }
 
     private async void CreateTodoAsync()
@@ -104,26 +106,31 @@ namespace QuinCalc.ViewModels
         }
       }
       await LoadTodosAsync();
+      Analytics.TrackEvent("Created Todo");
     }
 
     private async void BackBtn_Click()
     {
+      Analytics.TrackEvent("Navigated Todo", new Dictionary<string, string> { { "Direction", "Back" } });
       await LoadTodosAsync(PageNum - 1, PageLimit);
     }
 
     private async void NextBtn_Click()
     {
+      Analytics.TrackEvent("Navigated Todo", new Dictionary<string, string> { { "Direction", "Forwards" } });
       await LoadTodosAsync(PageNum + 1, PageLimit);
     }
 
     private async void HideDoneCheck_Checked()
     {
+      Analytics.TrackEvent("Filtered Expenses", new Dictionary<string, string> { { "Load Type", "Not Done" } });
       CurrentLoadType = LoadExpenseType.NotDone;
       await LoadTodosAsync(PageNum, PageLimit, CurrentLoadType);
     }
 
     private async void HideDoneCheck_Unchecked()
     {
+      Analytics.TrackEvent("Filtered Expenses", new Dictionary<string, string> { { "Load Type", "All" } });
       CurrentLoadType = LoadExpenseType.All;
       await LoadTodosAsync(PageNum, PageLimit, CurrentLoadType);
     }
