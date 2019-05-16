@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AppDescription" xml:space="preserve">
-    <value>QuinCalc is a small almost toy like application to keep track of some of your todos and biweekly expenses of course you have to type them in but hey! as long as it works right? Eventually Planned Features: Yearly/Monthly/Biweekly Expense Reports, Notifications/LiveTiles for  UpComing Todos/Expenses, And more stuff I guess :)</value>
+    <value>QuinCalc es una aplicación pequeña que te ayuda a mantener al pendiente de tus cosas por hacer y tus gastos quincenales, claro que los tienes que ingresar pero mientras funcione verdad!? Funcionalidades eventualmente planeadas: reporte Anual/Mensual/Quincenal de gastos, Notificaciones para pendientes/gastos pendientes y mas cosas supongo :)</value>
     <comment>App Desciption</comment>
   </data>
   <data name="AppDisplayName" xml:space="preserve">
@@ -126,15 +126,15 @@
     <comment>App Description Name</comment>
   </data>
   <data name="ExceptionEnumToBooleanConverterParameterMustBeAnEnumName" xml:space="preserve">
-    <value>parameter must be an Enum name!</value>
+    <value>El parametro debe ser un Enumerado</value>
     <comment>Parameter must be an Enum name in enum to boolean converter</comment>
   </data>
   <data name="ExceptionEnumToBooleanConverterValueMustBeAnEnum" xml:space="preserve">
-    <value>value must be an Enum!</value>
+    <value>El Valor debe ser un Enumerado</value>
     <comment>Value must be an Enum in enum to boolean converter</comment>
   </data>
   <data name="ExceptionSettingsStorageExtensionsFileNameIsNullOrEmpty" xml:space="preserve">
-    <value>File name is null or empty. Specify a valid file name</value>
+    <value>El nombre del archivo es null o esta vacio, especifica un nombre de archivo valido</value>
     <comment>File name is null or empty to save file in settings storage extensions</comment>
   </data>
   <data name="ExceptionShareSourceDataDeferredDataFormatIdIsNullOrEmpty" xml:space="preserve">
@@ -146,204 +146,204 @@
     <comment>The Parameter html is null or empty.</comment>
   </data>
   <data name="ExceptionShareSourceDataStorageItemsIsNullOrEmpty" xml:space="preserve">
-    <value>The Parameter StorageItems is null or does not contains any element.</value>
+    <value>El parametro DeferredDataFormatId es nulo o no contiene algun elemento.</value>
     <comment>The Parameter StorageItems is null or does not contains any element.</comment>
   </data>
   <data name="ExceptionShareSourceDataTitleIsNullOrEmpty" xml:space="preserve">
-    <value>The parameter title can not be null or empty.</value>
+    <value>El parametro titulo no puede ser nulo o vacio.</value>
     <comment>The parameter title can not be null or empty</comment>
   </data>
   <data name="ExpensePage_Amount.Text" xml:space="preserve">
-    <value>Amount:</value>
+    <value>Total:</value>
   </data>
   <data name="ExpensePage_Form_Amount_Label.Text" xml:space="preserve">
-    <value>Amount</value>
+    <value>Cantidad</value>
   </data>
   <data name="ExpensePage_Form_Amount_Placeholder.PlaceholderText" xml:space="preserve">
-    <value>Expense Amount</value>
+    <value>Gasto</value>
   </data>
   <data name="ExpensePage_Form_Delete_Btn_Label.Label" xml:space="preserve">
-    <value>Delete</value>
+    <value>Eliminar</value>
   </data>
   <data name="ExpensePage_Form_MarkAsDone_Btn_Label.Label" xml:space="preserve">
-    <value>Mark as done</value>
+    <value>Marcar como completo</value>
   </data>
   <data name="ExpensePage_Form_MarkAsNotDone_Btn_Label.Label" xml:space="preserve">
-    <value>Mark as not done</value>
+    <value>Marcar como incompleto</value>
   </data>
   <data name="ExpensePage_Form_Name_Label.Text" xml:space="preserve">
-    <value>Name</value>
+    <value>Nombre</value>
   </data>
   <data name="ExpensePage_Form_Name_Placeholder.PlaceholderText" xml:space="preserve">
-    <value>Expense's Name</value>
+    <value>Nombre del Gasto</value>
   </data>
   <data name="ExpensePage_Form_Payment_Label.Text" xml:space="preserve">
-    <value>Payment Date</value>
+    <value>Fecha de Pago</value>
   </data>
   <data name="ExpensePage_Form_Save_Btn_Label.Label" xml:space="preserve">
-    <value>Save</value>
+    <value>Guardar</value>
   </data>
   <data name="ExpensePage_HideDoneBtn_Label.Label" xml:space="preserve">
-    <value>Hide Done</value>
+    <value>Esconder completos</value>
   </data>
   <data name="ExpensePage_Items.Text" xml:space="preserve">
-    <value>Items: </value>
+    <value>Gastos:</value>
   </data>
   <data name="ExpensePage_MasterDetail_Header.MasterHeader" xml:space="preserve">
-    <value>Expenses</value>
+    <value>Gastos</value>
   </data>
   <data name="ExpensePage_Page.Text" xml:space="preserve">
-    <value>Page: </value>
+    <value>Pagina:</value>
   </data>
   <data name="ExpensePage_Unselected.Text" xml:space="preserve">
-    <value>Select An Expense From The List Or Create A Fresh One</value>
+    <value>Selecciona un gasto de la lista o crea uno nuevo</value>
   </data>
   <data name="ExpensesPage_AddBtn_Label.Label" xml:space="preserve">
-    <value>Add Expense</value>
+    <value>Agregar Gasto</value>
   </data>
   <data name="ExpensesPage_BackBtn_Label.Label" xml:space="preserve">
-    <value>Back</value>
+    <value>Atras</value>
   </data>
   <data name="ExpensesPage_NextBtn_Label.Label" xml:space="preserve">
-    <value>Next</value>
+    <value>Siguiente</value>
   </data>
   <data name="FeedbackHub_Link.Content" xml:space="preserve">
-    <value>Feedback</value>
+    <value>Retroalimentación</value>
     <comment>Displayed as the link to launching the Feedback Hub.</comment>
   </data>
   <data name="HomePage_Summary.Header" xml:space="preserve">
-    <value>Summary</value>
+    <value>Resumen</value>
   </data>
   <data name="HomePage_Summary_Total_Biweek.Text" xml:space="preserve">
-    <value>Total For the Current Biweek:</value>
+    <value>Total para la quincena actual</value>
   </data>
   <data name="HomePage_Summary_Total_Month.Text" xml:space="preserve">
-    <value>Total For the Current Month:</value>
+    <value>Total para el mes actual</value>
   </data>
   <data name="HomePage_UpNextExpense.Header" xml:space="preserve">
-    <value>Up next expense</value>
+    <value>Siguiente Gasto</value>
     <comment>Up next expense header section</comment>
   </data>
   <data name="HomePage_UpNextExpense_Title.Text" xml:space="preserve">
-    <value>Up Next Expense</value>
+    <value>Siguiente Gasto</value>
   </data>
   <data name="HomePage_UpNextTodo.Header" xml:space="preserve">
-    <value>Up next To-do</value>
+    <value>Siguiente Pendiente</value>
     <comment>Upnext todo header section</comment>
   </data>
   <data name="HomePage_UpNextTodo_Title.Text" xml:space="preserve">
-    <value>Up Next To-do</value>
+    <value>Siguiente Pendiente</value>
   </data>
   <data name="Settings_About.Text" xml:space="preserve">
-    <value>About this application</value>
+    <value>Acerca de esta aplicación</value>
     <comment>Settings description label</comment>
   </data>
   <data name="Settings_AboutDescription.Text" xml:space="preserve">
-    <value>QuinCalc is a small almost toy like application to keep track of some of your todos and biweekly expenses of course you have to type them in but hey! as long as it works right? Eventually Planned Features: Yearly/Monthly/Biweekly Expense Reports, Notifications/LiveTiles for  UpComing Todos/Expenses, And more stuff I guess :)</value>
+    <value>QuinCalc es una aplicación pequeña que te ayuda a mantener al pendiente de tus cosas por hacer y tus gastos quincenales, claro que los tienes que ingresar pero mientras funcione verdad!? Funcionalidades eventualmente planeadas: reporte Anual/Mensual/Quincenal de gastos, Notificaciones para pendientes/gastos pendientes y mas cosas supongo :)</value>
     <comment>Setings Descripton</comment>
   </data>
   <data name="Settings_Personalization.Text" xml:space="preserve">
-    <value>Personalization</value>
+    <value>Personalización</value>
   </data>
   <data name="Settings_Theme.Text" xml:space="preserve">
-    <value>Choose Theme</value>
+    <value>Elegir Tema</value>
   </data>
   <data name="Settings_Theme_Dark.Content" xml:space="preserve">
-    <value>Dark</value>
+    <value>Oscuro</value>
   </data>
   <data name="Settings_Theme_Default.Content" xml:space="preserve">
-    <value>Windows default</value>
+    <value>Predeterminado de Windows</value>
   </data>
   <data name="Settings_Theme_Light.Content" xml:space="preserve">
-    <value>Light</value>
+    <value>Claro</value>
   </data>
   <data name="ShareTarget_CompleteButton.Content" xml:space="preserve">
-    <value>Complete</value>
+    <value>Listo</value>
     <comment>Complete button content text in ShareTarget page</comment>
   </data>
   <data name="ShareTarget_ImagesTitle" xml:space="preserve">
-    <value>Images shared with the application</value>
+    <value>Imagenes compartidas con la aplicación</value>
     <comment>Page title for ShareTarget when images are shared</comment>
   </data>
   <data name="ShareTarget_WebLinkTitle" xml:space="preserve">
-    <value>Web link shared with the application</value>
+    <value>Links Compartidos con la aplicación</value>
     <comment>Page title for ShareTarget when web link is shared</comment>
   </data>
   <data name="Shell_Expenses.Content" xml:space="preserve">
-    <value>Expenses</value>
+    <value>Gastos</value>
     <comment>Navigation view item name for Expenses</comment>
   </data>
   <data name="Shell_Home.Content" xml:space="preserve">
-    <value>Home</value>
+    <value>Resumen</value>
   </data>
   <data name="Shell_Main.Content" xml:space="preserve">
-    <value>Main</value>
+    <value>Principal</value>
     <comment>Navigation view item name for Main</comment>
   </data>
   <data name="Shell_MyLists.Content" xml:space="preserve">
-    <value>MyLists</value>
+    <value>Mis Listas</value>
     <comment>Navigation view item name for MyLists</comment>
   </data>
   <data name="Shell_QuickNotes.Content" xml:space="preserve">
-    <value>QuickNotes</value>
+    <value>Notas Rapidas</value>
     <comment>Navigation view item name for QuickNotes</comment>
   </data>
   <data name="Shell_Todos.Content" xml:space="preserve">
-    <value>To-do's</value>
+    <value>Pendientes</value>
     <comment>Navigation view item name for Todos</comment>
   </data>
   <data name="TodosPage_AddBtn_Label.Label" xml:space="preserve">
-    <value>Add To-do</value>
+    <value>Agregar Pendiente</value>
   </data>
   <data name="TodosPage_BackBtn_Label.Label" xml:space="preserve">
-    <value>Back</value>
+    <value>Atras</value>
   </data>
   <data name="TodosPage_Form_Deletebtn_Label.Label" xml:space="preserve">
-    <value>Delete</value>
+    <value>Eliminar</value>
   </data>
   <data name="TodosPage_Form_Description_Label.Text" xml:space="preserve">
-    <value>Description</value>
+    <value>Descripción</value>
   </data>
   <data name="TodosPage_Form_Description_Placeholder.PlaceholderText" xml:space="preserve">
-    <value>To-do's Description</value>
+    <value>Descripcion del Pendiente</value>
   </data>
   <data name="TodosPage_Form_DueTo_Label.Text" xml:space="preserve">
-    <value>Due To</value>
+    <value>Fecha de caducidad</value>
   </data>
   <data name="TodosPage_Form_IsDone_Label.Text" xml:space="preserve">
-    <value>Is Done</value>
+    <value>Esta completo</value>
   </data>
   <data name="TodosPage_Form_MarkAsDonebtn_Label.Label" xml:space="preserve">
-    <value>Mark as done</value>
+    <value>Marcar como completo</value>
   </data>
   <data name="TodosPage_Form_MarkAsNotDonebtn_Label.Label" xml:space="preserve">
-    <value>Mark as not done</value>
+    <value>marcar como incompleto</value>
   </data>
   <data name="TodosPage_Form_Name_Label.Text" xml:space="preserve">
-    <value>Name</value>
+    <value>Nombre</value>
   </data>
   <data name="TodosPage_Form_Name_Placeholder.PlaceholderText" xml:space="preserve">
-    <value>To-do's Name</value>
+    <value>Nombre del pendiente</value>
   </data>
   <data name="TodosPage_Form_Savebtn_Label.Label" xml:space="preserve">
-    <value>Save</value>
+    <value>Guardar</value>
   </data>
   <data name="TodosPage_HideDoneBtn_Label.Label" xml:space="preserve">
-    <value>Hide Done</value>
+    <value>Esconder Terminados</value>
   </data>
   <data name="TodosPage_Items.Text" xml:space="preserve">
-    <value>Items:</value>
+    <value>Pendientes:</value>
   </data>
   <data name="TodosPage_MasterDetail_Header.MasterHeader" xml:space="preserve">
-    <value>To-Do's</value>
+    <value>Pendientes</value>
   </data>
   <data name="TodosPage_NextBtn_Label.Label" xml:space="preserve">
-    <value>Next</value>
+    <value>Siguiente</value>
   </data>
   <data name="TodosPage_Page.Text" xml:space="preserve">
-    <value>Page:</value>
+    <value>Pagina:</value>
   </data>
   <data name="TodosPage_Unselected.Text" xml:space="preserve">
-    <value>Select a To-Do From The List Or Create A Fresh One</value>
+    <value>Selecciona un pendiente de la lista o crea uno nuevo</value>
   </data>
 </root>
