@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace QuinCalc.Services
+namespace QuinCalc.Core.Services
 {
   public static class DateService
   {
