@@ -1,11 +1,7 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace QuinCalc.Helpers
+namespace QuinCalc.Core.Helpers
 {
   public static class Json
   {

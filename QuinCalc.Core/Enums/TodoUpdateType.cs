@@ -1,6 +1,6 @@
-﻿namespace QuinCalc.Enums
+﻿namespace QuinCalc.Core.Enums
 {
-  public enum ExpenseUpdateType
+  public enum TodoUpdateType
   {
     Save,
     Delete,

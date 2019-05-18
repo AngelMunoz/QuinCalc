@@ -1,4 +1,4 @@
-﻿namespace QuinCalc.Enums
+﻿namespace QuinCalc.Core.Enums
 {
   public enum LoadExpenseType
   {

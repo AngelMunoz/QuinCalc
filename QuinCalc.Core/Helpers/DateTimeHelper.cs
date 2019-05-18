@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace QuinCalc.Helpers
+namespace QuinCalc.Core.Helpers
 {
   /// <summary>
   /// Implements a (helper) class to convert date and time values.

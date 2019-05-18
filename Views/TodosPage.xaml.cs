@@ -1,7 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using Microsoft.Toolkit.Uwp.UI.Controls;
-using QuinCalcData.Models;
-using QuinCalc.Services;
+﻿using Microsoft.Toolkit.Uwp.UI.Controls;
 using QuinCalc.ViewModels;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;

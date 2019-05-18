@@ -6,89 +6,85 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using QuinCalcData.Models;
 
-namespace QuinCalc.Services
+namespace QuinCalc.Core.Services
 {
   public class TodoService : IBasicService<Todo>, IDisposable
   {
-    private QuincalcContext _context;
+    private readonly QuincalcContext _context;
 
-    public TodoService(QuincalcContext context = null)
+    public TodoService(QuincalcContext context = null, string dbstring = null)
     {
-      _context = context ?? new QuincalcContext();
+      _context = context ?? new QuincalcContext(dbstring);
     }
 
-    public async Task<bool> Create(Todo item)
+    public Task<bool> CreateAsync(Todo item)
     {
       try
       {
-        await _context.Todos.AddAsync(item);
-        await _context.SaveChangesAsync();
-        return true;
+        _context.Todos.Add(item);
+        return _context.SaveChangesAsync().ContinueWith(_ => true);
       }
       catch (Exception e)
       {
         Debug.WriteLine(e.StackTrace, "Service:Error:Create");
-        return false;
+        return Task.FromResult(false);
       }
     }
 
-    public async Task<bool> Destroy(Todo item)
+    public Task<bool> DestroyAsync(Todo item)
     {
       try
       {
         _context.Todos.Remove(item);
-        await _context.SaveChangesAsync();
-        return true;
+        return _context.SaveChangesAsync().ContinueWith(_ => true);
       }
       catch (Exception e)
       {
         Debug.WriteLine(e.StackTrace, "Service:Error:Destroy");
-        return false;
+        return Task.FromResult(false);
       }
     }
 
-    public async Task<(int, List<Todo>)> Find(int skip, int limit)
+    public (int, IEnumerable<Todo>) Find(int skip, int limit)
     {
       var count = _context.Todos.Count();
-      var todos = await _context.Todos
+      var todos = _context.Todos
         .OrderBy(e => Math.Abs((e.DueDate - DateTimeOffset.Now).Ticks))
         .Skip(skip)
         .Take(limit)
-        .ToListAsync();
+        .AsEnumerable();
       return (count, todos);
-
     }
 
-    public async Task<(int, List<Todo>)> FindByIsDone(bool isDone, int skip, int limit)
+    public (int, IEnumerable<Todo>) FindByIsDone(bool isDone, int skip, int limit)
     {
       var count = _context.Todos.Where(t => t.IsDone == isDone).Count();
-      var todos = await _context.Todos
+      var todos = _context.Todos
         .Where(t => t.IsDone == isDone)
         .OrderBy(e => Math.Abs((e.DueDate - DateTimeOffset.Now).Ticks))
         .Skip(skip)
         .Take(limit)
-        .ToListAsync();
+        .AsEnumerable();
       return (count, todos);
     }
 
-    public async Task<bool> Update(Todo item)
+    public Task<bool> UpdateAsync(Todo item)
     {
       try
       {
         _context.Todos.Update(item);
-        await _context.SaveChangesAsync();
-        return true;
+        return _context.SaveChangesAsync().ContinueWith(_ => true);
       }
       catch (Exception e)
       {
         Debug.WriteLine(e.StackTrace, "Service:Error:Update");
-        return false;
+        return Task.FromResult(false);
       }
     }
 
-    public async Task<Todo> FindClosest()
+    public Task<Todo> FindClosestAsync()
     {
-      var todo = await _context.Todos
+      var todo = _context.Todos
        .Where(t => !t.IsDone)
        .OrderBy(e => Math.Abs((e.DueDate - DateTimeOffset.Now).Ticks))
        .FirstOrDefaultAsync();
@@ -97,7 +93,17 @@ namespace QuinCalc.Services
 
     public void Dispose()
     {
-      _context.Dispose();
+      Dispose(true);
+      GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+      if (disposing)
+      {
+        // Managed Resources Dosposal
+        _context.Dispose();
+      }
     }
   }
 }

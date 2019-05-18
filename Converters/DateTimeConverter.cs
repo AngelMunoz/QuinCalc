@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Globalization;
-using QuinCalc.Helpers;
 using Windows.UI.Xaml.Data;
 
 namespace QuinCalc.Converters
