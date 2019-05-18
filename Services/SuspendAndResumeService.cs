@@ -1,10 +1,8 @@
 ﻿using Caliburn.Micro;
 using QuinCalc.Activation;
+using QuinCalc.Core.Services;
 using QuinCalc.Helpers;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Activation;
 using Windows.Storage;

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using QuinCalcData.Models;
-using QuinCalc.Services;
-using QuinCalc.ViewModels;
+﻿using QuinCalc.ViewModels;
 using Windows.UI.Xaml.Controls;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
