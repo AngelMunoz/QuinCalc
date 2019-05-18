@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using QuinCalc.Core.Services;
 using QuinCalc.Services;
 using Windows.ApplicationModel.Background;
 using Windows.UI.Notifications;

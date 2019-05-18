@@ -2,21 +2,17 @@
 using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using QuinCalcData.Models;
-using QuinCalc.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.ApplicationModel.Background;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
 using Caliburn.Micro;
 using QuinCalc.Services;
 using System.Collections.Generic;
-using QuinCalc.Helpers;
 using QuinCalc.ViewModels;
 using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
+using QuinCalc.Core.Helpers;
 
 namespace QuinCalc
 {
@@ -45,13 +41,13 @@ namespace QuinCalc
       EnteredBackground += App_EnteredBackground;
       Resuming += App_Resuming;
       UnhandledException += App_UnhandledException1;
-      AppCenter.Start("6a3a0926-ddb0-47b8-afc3-b27dc0b61683", typeof(Analytics), typeof(Crashes));
-      Initialize();
-      _activationService = new Lazy<ActivationService>(CreateActivationService);
       using (var db = new QuincalcContext())
       {
         db.Database.Migrate();
       }
+      AppCenter.Start("6a3a0926-ddb0-47b8-afc3-b27dc0b61683", typeof(Analytics), typeof(Crashes));
+      Initialize();
+      _activationService = new Lazy<ActivationService>(CreateActivationService);
     }
 
     private void App_UnhandledException1(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs e)

@@ -112,34 +112,21 @@
     </Compile>
     <Compile Include="Converters\DateTimeConverter.cs" />
     <Compile Include="Converters\CurrencyConverter.cs" />
-    <Compile Include="Enums\TodoUpdateType.cs" />
-    <Compile Include="Enums\LoadExpenseType.cs" />
-    <Compile Include="Enums\ExpenseUpdateType.cs" />
     <Compile Include="Helpers\DataRequestExtensions.cs" />
-    <Compile Include="Helpers\DateTimeHelper.cs" />
     <Compile Include="Helpers\EnumToBooleanConverter.cs" />
-    <Compile Include="Helpers\Json.cs" />
     <Compile Include="Helpers\NavHelper.cs" />
     <Compile Include="Helpers\NodeFinder.cs" />
     <Compile Include="Helpers\SettingsStorageExtensions.cs" />
     <Compile Include="Helpers\ShareOperationExtensions.cs" />
-    <Compile Include="Helpers\Singleton.cs" />
     <Compile Include="Models\ShareSourceData.cs" />
     <Compile Include="Models\ShareSourceItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Helpers\NotificationBase.cs" />
     <Compile Include="ResourceExtensions.cs" />
     <Compile Include="Services\ActivationService.cs" />
-    <Compile Include="Services\DateService.cs" />
-    <Compile Include="Services\ExpenseService.cs" />
-    <Compile Include="Services\IBasicService.cs" />
-    <Compile Include="Services\OnBackgroundEnteringEventArgs.cs" />
     <Compile Include="Services\SuspendAndResumeService.cs" />
-    <Compile Include="Services\SuspensionState.cs" />
     <Compile Include="Services\ThemeSelectorService.cs" />
     <Compile Include="Services\ToastService.cs" />
-    <Compile Include="Services\TodoService.cs" />
-    <Compile Include="Services\UserActivityData.cs" />
+    <Compile Include="Models\UserActivityData.cs" />
     <Compile Include="Services\UserActivityService.cs" />
     <Compile Include="Tasks\NotifyUpNextExpenseTask.cs" />
     <Compile Include="ViewModels\ExpensesViewModel.cs" />
@@ -339,12 +326,15 @@
     </SDKReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="QuinCalc.Core\QuinCalc.Core.csproj">
+      <Project>{1c4541e3-e614-45c8-9917-58baad79c740}</Project>
+      <Name>QuinCalc.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="QuinCalcData\QuinCalcData.csproj">
       <Project>{da3448cd-709c-4978-93df-85b512409f5e}</Project>
       <Name>QuinCalcData</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

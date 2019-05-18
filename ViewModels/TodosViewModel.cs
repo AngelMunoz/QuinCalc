@@ -1,13 +1,12 @@
 ﻿using Caliburn.Micro;
 using Microsoft.AppCenter.Analytics;
-using QuinCalc.Enums;
-using QuinCalc.Services;
+using QuinCalc.Core.Enums;
+using QuinCalc.Core.Services;
 using QuinCalcData.Models;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -35,27 +34,27 @@ namespace QuinCalc.ViewModels
 
     protected override Task OnInitializeAsync(CancellationToken cancellationToken)
     {
-      base.OnInitializeAsync(cancellationToken);
-      return LoadTodosAsync();
+      LoadTodos();
+      return base.OnInitializeAsync(cancellationToken);
     }
 
-    private async Task LoadTodosAsync(int page = 1, int limit = 5, LoadExpenseType loadType = LoadExpenseType.All)
+    private void LoadTodos(int page = 1, int limit = 5, LoadExpenseType loadType = LoadExpenseType.All)
     {
       var skip = (page - 1) * limit;
       using (var todservice = new TodoService())
       {
         int count = 0;
-        List<Todo> todos = null;
+        IEnumerable<Todo> todos = null;
         switch (loadType)
         {
           case LoadExpenseType.All:
-            (count, todos) = await todservice.Find(skip, limit);
+            (count, todos) = todservice.Find(skip, limit);
             break;
           case LoadExpenseType.Done:
-            (count, todos) = await todservice.FindByIsDone(true, skip, limit);
+            (count, todos) = todservice.FindByIsDone(true, skip, limit);
             break;
           case LoadExpenseType.NotDone:
-            (count, todos) = await todservice.FindByIsDone(false, skip, limit);
+            (count, todos) = todservice.FindByIsDone(false, skip, limit);
             break;
         }
         TotalTodoCount = count;
@@ -69,70 +68,75 @@ namespace QuinCalc.ViewModels
 
     private async Task SaveTodoAsync(TodosDetailViewModel args, TodoUpdateType type)
     {
+      Analytics.TrackEvent("Saved Todo", new Dictionary<string, string> { { "Save Type", Enum.GetName(typeof(TodoUpdateType), type) } });
       var expense = args.Item;
+      var result = false;
       using (var exservice = new TodoService())
       {
         switch (type)
         {
           case TodoUpdateType.Delete:
-            await exservice.Destroy(expense);
+            result = await exservice.DestroyAsync(expense);
             break;
           case TodoUpdateType.MarkAsDone:
             expense.IsDone = true;
-            await exservice.Update(expense);
+            result = await exservice.UpdateAsync(expense);
             break;
           case TodoUpdateType.MarkAsNotDone:
             expense.IsDone = false;
-            await exservice.Update(expense);
+            result = await exservice.UpdateAsync(expense);
             break;
           case TodoUpdateType.Save:
-            await exservice.Update(expense);
+            result = await exservice.UpdateAsync(expense);
             break;
         }
       }
-      await LoadTodosAsync(PageNum, PageLimit);
-      Analytics.TrackEvent("Saved Todo", new Dictionary<string, string> { { "Save Type", Enum.GetName(typeof(TodoUpdateType), type) } });
+      if(!result)
+      {
+        Debug.WriteLine("Failed to Update Todo");
+      }
+      await Task.Run(() => LoadTodos(PageNum, PageLimit, CurrentLoadType));
     }
 
     private async void CreateTodoAsync()
     {
       using (var todservice = new TodoService())
       {
-        var success = await todservice.Create(new Todo { DueDate = DateService.GetNextQuin() });
+        var success = await todservice.CreateAsync(new Todo { DueDate = DateService.GetNextQuin() });
         if (!success)
         {
-          // TODO: add unsuccessful code
+          Debug.WriteLine("Failed to Add Todo");
           return;
         }
       }
-      await LoadTodosAsync();
       Analytics.TrackEvent("Created Todo");
+      await Task.Run(() => LoadTodos(PageNum, PageLimit));
     }
 
     private async void BackBtn_Click()
     {
       Analytics.TrackEvent("Navigated Todo", new Dictionary<string, string> { { "Direction", "Back" } });
-      await LoadTodosAsync(PageNum - 1, PageLimit);
+      await Task.Run(() => LoadTodos(PageNum - 1, PageLimit, CurrentLoadType));
     }
 
     private async void NextBtn_Click()
     {
       Analytics.TrackEvent("Navigated Todo", new Dictionary<string, string> { { "Direction", "Forwards" } });
-      await LoadTodosAsync(PageNum + 1, PageLimit);
+      await Task.Run(() => LoadTodos(PageNum + 1, PageLimit, CurrentLoadType));
     }
 
     private async void HideDoneCheck_Checked()
     {
       Analytics.TrackEvent("Filtered Expenses", new Dictionary<string, string> { { "Load Type", "Not Done" } });
       CurrentLoadType = LoadExpenseType.NotDone;
-      await LoadTodosAsync(PageNum, PageLimit, CurrentLoadType);
+      await Task.Run(() => LoadTodos(PageNum, PageLimit, CurrentLoadType));
     }
 
     private async void HideDoneCheck_Unchecked()
     {
       Analytics.TrackEvent("Filtered Expenses", new Dictionary<string, string> { { "Load Type", "All" } });
       CurrentLoadType = LoadExpenseType.All;
-      await LoadTodosAsync(PageNum, PageLimit, CurrentLoadType);
+      await Task.Run(() => LoadTodos(PageNum, PageLimit, CurrentLoadType));
     }
   }
 }

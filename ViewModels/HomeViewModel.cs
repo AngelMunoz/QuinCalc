@@ -1,11 +1,9 @@
 ﻿using Caliburn.Micro;
 using Microsoft.EntityFrameworkCore;
-using QuinCalc.Services;
+using QuinCalc.Core.Services;
 using QuinCalcData.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -40,12 +38,14 @@ namespace QuinCalc.ViewModels
 
     private async Task LoadUpComing()
     {
-      using (var context = new QuincalcContext())
+      var dayToCheck = DateService.GetDayToCheck();
+      using (var ExService = new ExpenseService())
       {
-        var dayToCheck = DateService.GetDayToCheck();
-        var biweekAmount = await GetBiweekAmount(context, dayToCheck);
-        var totalMonthly = await GetMonthlyAmount(context);
-
+        var expense = await ExService.FindClosest();
+        var biweekAmount = await ExService.GetBiweekAmount(dayToCheck);
+        var totalMonthly = await ExService.GetMonthlyAmount();
+        ShowExpense = expense == null ? false : true;
+        UpNextExpense = expense;
         UpNextBiweek = new Expense
         {
           DueDate = DateService.GetNextQuin(dayToCheck),
@@ -57,53 +57,14 @@ namespace QuinCalc.ViewModels
           DueDate = DateService.GetNextQuin(DateTime.DaysInMonth(DateTimeOffset.Now.Year, DateTimeOffset.Now.Month)),
           Amount = totalMonthly
         };
-
-        using (var ExService = new ExpenseService())
-        {
-          var expense = await ExService.FindClosest();
-          ShowExpense = expense == null ? false : true;
-          UpNextExpense = expense;
-        }
-
-        using (var TodService = new TodoService())
-        {
-          var todo = await TodService.FindClosest();
-          ShowTodo = todo == null ? false : true;
-          UpNextTodo = todo;
-        }
       }
 
-    }
-
-    /// <summary>
-    /// Get the Total Amount to pay on the NextQuin (day 15 or last day of the current month)
-    /// </summary>
-    /// <param name="context"></param>
-    /// <param name="dayToCheck"></param>
-    /// <returns></returns>
-    private static async Task<decimal> GetBiweekAmount(QuincalcContext context, int dayToCheck)
-    {
-      return await context.Expenses
-        .Where(e =>
-          (e.DueDate.Day >= DateTimeOffset.Now.Day) &&
-          (e.DueDate.Day <= DateService.GetNextQuin(dayToCheck).Day)
-         )
-        .SumAsync(e => e.Amount);
-    }
-
-    /// <summary>
-    /// Get the Total Amount to pay on the rest of the month (last day of the current month)
-    /// </summary>
-    /// <param name="context"></param>
-    /// <returns></returns>
-    private static async Task<decimal> GetMonthlyAmount(QuincalcContext context)
-    {
-      return await context.Expenses
-        .Where(e =>
-          (e.DueDate.Day >= DateTimeOffset.Now.Day) &&
-          (e.DueDate.Day <= DateTime.DaysInMonth(DateTimeOffset.Now.Year, DateTimeOffset.Now.Month))
-         )
-        .SumAsync(e => e.Amount);
+      using (var TodService = new TodoService())
+      {
+        var todo = await TodService.FindClosestAsync();
+        ShowTodo = todo == null ? false : true;
+        UpNextTodo = todo;
+      }
     }
   }
 }
